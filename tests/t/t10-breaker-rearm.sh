@@ -2,12 +2,11 @@
 # T10 — breaker re-arm: after the documented recovery (fix cause, `rm` the
 # flag — OPERATIONS.md), a healthy next run must proceed and record success.
 #
-# XFAIL, PINS BUG S4 (run-loop.sh:119-128): rows written on trip are
-# result="breaker" and excluded from the last-3 filter, and a tripped run
-# never reaches the agent — so after `rm` the filter still sees
-# error,error,error and re-trips instantly. The documented recovery cannot
-# work. This test asserts the INTENDED behavior and is listed in
-# tests/known-failures.txt until the bug is fixed.
+# Pinned bug S4 (fixed): rows written on trip are result="breaker" and were
+# excluded from the last-3 filter, so after `rm` the filter still saw
+# error,error,error and re-tripped instantly. Breaker rows now count as
+# reset markers in the window, so recovery proceeds and only 3 NEW failures
+# can re-trip.
 source "$(dirname "$0")/../lib.sh"
 t_setup
 
