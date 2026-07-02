@@ -116,9 +116,12 @@ if [[ -e "$BRK" ]]; then
   notify "$PROJECT_NAME $LOOP" "breaker latched — fix the cause, then: rm $BRK"
   record_run breaker; exit 1
 fi
+# "breaker" rows count as reset markers: a trip writes one, so after the
+# documented recovery (rm the flag) the window is error,error,breaker — not
+# three straight failures — and only 3 NEW failures can re-trip.
 LAST3=$(tail -200 "$STATE_DIR/runs.jsonl" 2>/dev/null | jq -rRs --arg l "$LOOP" \
   '[split("\n")[] | select(length>0) | (fromjson? // empty)
-    | select(.loop==$l and (.result=="success" or .result=="error" or .result=="timeout"))]
+    | select(.loop==$l and (.result=="success" or .result=="error" or .result=="timeout" or .result=="breaker"))]
    | .[-3:] | map(.result) | join(",")' 2>/dev/null)
 if [[ "$LAST3" =~ ^(error|timeout),(error|timeout),(error|timeout)$ ]]; then
   printf '%s tripped after: %s\n' "$(date +%F)" "$LAST3" >"$BRK"
