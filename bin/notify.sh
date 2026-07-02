@@ -15,7 +15,14 @@ fi
 
 case "$method" in
   osascript)
-    osascript -e "display notification \"${MSG//\"/'}\" with title \"${TITLE//\"/'}\" sound name \"Submarine\"" 2>/dev/null ;;
+    # Crush double quotes in plain assignments BEFORE the format string:
+    # doing it inline inside the double-quoted -e argument mis-parses on
+    # modern bash (the replacement's quote pairs with the next expansion's),
+    # garbling the text and letting \" escape the AppleScript string context.
+    # Identical on bash 3.2 (launchd) and bash 5.
+    msg_crushed=${MSG//\"/\'}
+    title_crushed=${TITLE//\"/\'}
+    osascript -e "display notification \"$msg_crushed\" with title \"$title_crushed\" sound name \"Submarine\"" 2>/dev/null ;;
   notify-send)
     notify-send "$TITLE" "$MSG" 2>/dev/null ;;
   webhook)
