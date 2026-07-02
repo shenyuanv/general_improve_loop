@@ -8,6 +8,8 @@ LOOP="${1:-orchestrator}"; CONFIG="${2:?config path}"
 # shellcheck source=/dev/null
 source "$CONFIG"
 export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+# Same resolution as run-loop.sh: stock macOS has no unprefixed GNU timeout
+TIMEOUT_BIN=$(command -v gtimeout || command -v timeout)
 
 git_ok=false; disk_gb=0; agent_auth=false; repo_dirty=true; deploy_healthy=null; gh_ok=false
 
@@ -20,12 +22,12 @@ disk_gb=${disk_gb:-0}
 [[ -z "$(git -C "$PROJECT_DIR" status --porcelain --untracked-files=no -- ':(exclude)ops' 2>/dev/null)" ]] && repo_dirty=false
 
 # ~1-cent probe; the one failure only a human login can fix — surface loudly
-if (cd "$HOME" && eval "timeout 90 $RUNNER_AUTH_PROBE" 2>/dev/null | grep -q OK); then agent_auth=true; fi
+if (cd "$HOME" && eval "$TIMEOUT_BIN 90 $RUNNER_AUTH_PROBE" 2>/dev/null | grep -q OK); then agent_auth=true; fi
 
 gh auth status >/dev/null 2>&1 && gh_ok=true
 
 if [[ -n "${DEPLOY_VERIFY_CMD:-}" ]]; then
-  if (cd "$PROJECT_DIR" && eval "timeout 30 $DEPLOY_VERIFY_CMD" >/dev/null 2>&1); then deploy_healthy=true; else deploy_healthy=false; fi
+  if (cd "$PROJECT_DIR" && eval "$TIMEOUT_BIN 30 $DEPLOY_VERIFY_CMD" >/dev/null 2>&1); then deploy_healthy=true; else deploy_healthy=false; fi
 fi
 
 extra="{}"
