@@ -1,0 +1,58 @@
+{
+  "ts": "2026-07-02T16:41:03Z",
+  "week": "2026-W27",
+  "window_days": 14,
+  "project": "general_improve_loop",
+  "runs": {
+    "window_runs": 1,
+    "success_rate": 0,
+    "results": {
+      "paused": 1
+    },
+    "cost_total_usd": 0,
+    "nogo_reverts": 0,
+    "timeouts": 0,
+    "by_loop": {
+      "orchestrator": {
+        "runs": 1,
+        "ok": 0,
+        "cost_usd": 0
+      }
+    }
+  },
+  "funnel": {
+    "open": {
+      "loop_filed": 0,
+      "accepted": 4,
+      "action_loop": 5,
+      "decisions": 1,
+      "bugs": 6,
+      "loop_prs": 0
+    },
+    "merged_window": {
+      "count": 0,
+      "median_hours_to_merge": null
+    },
+    "prs_awaiting_rework": 0
+  },
+  "funnel_note": null,
+  "ledger": {
+    "journeys": {
+      "window_rows": 0,
+      "verdicts": {}
+    }
+  },
+  "tester_latest": null,
+  "ratchet": {
+    "loc_product": 2547,
+    "loc_tests": 1369,
+    "deps": 0,
+    "tests_collected": 35
+  },
+  "markers": {
+    "paused": false,
+    "demoted": false,
+    "blocked": false
+  },
+  "notification_precision": null
+}
