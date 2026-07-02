@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# tests/stubs/crontab — an in-sandbox crontab: -l replays, - installs.
+set -u
+CAP="${T_CAP:-$HOME/.captures}"; mkdir -p "$CAP"
+CUR="$CAP/crontab.current"
+case "${1:-}" in
+  -l) [[ -f "$CUR" ]] && cat "$CUR"; exit 0 ;;
+  -)  cat >"$CUR"; exit 0 ;;
+  *)  echo "crontab stub: unsupported argv: $*" >&2; exit 1 ;;
+esac

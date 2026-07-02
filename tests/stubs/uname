@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# tests/stubs/uname — pretend to be another OS (scheduler tests only; never
+# installed into the default stub set — run-loop/preflight must see the truth).
+echo "${UNAME_STUB:-Linux}"

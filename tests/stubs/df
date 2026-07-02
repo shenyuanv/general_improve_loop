@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# tests/stubs/df — deterministic free-disk answer for preflight, both dialects
+# (`df -g /` on Darwin: bare number; `df -BG /` on Linux: G-suffixed).
+set -u
+gb="${DF_STUB_GB:-50}"
+suf=""
+[[ "${1:-}" == "-BG" ]] && suf="G"
+printf 'Filesystem 1G-blocks Used Available Capacity Mounted\n'
+printf '/dev/stub 500 100 %s%s 20%% /\n' "$gb" "$suf"

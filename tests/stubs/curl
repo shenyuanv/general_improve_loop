@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# tests/stubs/curl — capture webhook posts (argv + -d payload), never network.
+set -u
+CAP="${T_CAP:-$HOME/.captures}"; mkdir -p "$CAP"
+payload=""
+prev=""
+for a in "$@"; do
+  [[ "$prev" == "-d" ]] && payload="$a"
+  prev="$a"
+done
+{
+  printf 'curl %s\n' "$*"
+  printf 'payload %s\n' "$payload"
+} >>"$CAP/curl.log"
+exit 0

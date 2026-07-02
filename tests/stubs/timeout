@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# tests/stubs/timeout — compat shim for hosts without an unprefixed GNU
+# timeout (stock macOS). Installed by fixture.sh ONLY when absent, so it
+# never shadows a real one.
+exec gtimeout "$@"

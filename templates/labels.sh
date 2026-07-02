@@ -20,4 +20,4 @@ mk "bug"                    "b60205" "Defect; enters the fix pipeline only with 
 mk "🙋 needs-your-decision" "b60205" "Owner call: read Options in the body, act or reply Option X"
 mk "loop-pr"                "b60205" "PR opened by the fixer; pr-verifier reviews it"
 mk "changes-requested"      "d93f0b" "Verifier rejected the PR; evidence in its comment"
-for c in ${COMPONENTS[@]}; do mk "component:$c" "0052cc" "Component: $c"; done
+for c in "${COMPONENTS[@]}"; do mk "component:$c" "0052cc" "Component: $c"; done

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# tests/stubs/notify-send — capture Linux desktop notifications.
+set -u
+CAP="${T_CAP:-$HOME/.captures}"; mkdir -p "$CAP"
+printf 'notify-send %s\n' "$*" >>"$CAP/notifications.log"
+exit 0

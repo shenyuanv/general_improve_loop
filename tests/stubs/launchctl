@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# tests/stubs/launchctl — record launchd operations instead of performing them.
+set -u
+CAP="${T_CAP:-$HOME/.captures}"; mkdir -p "$CAP"
+printf 'launchctl %s\n' "$*" >>"$CAP/launchctl.log"
+exit 0

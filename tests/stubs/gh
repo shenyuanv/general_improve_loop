@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# tests/stubs/gh — hermetic GitHub CLI stub.
+# Reads: canned fixtures under $T_GH_DIR; applies the CALLER's --jq with real
+# jq so the wrapper's actual filter expressions are under test.
+# Writes: one argv line per mutating call to $T_CAP/gh-mutations.log.
+# Failure knobs: T_GH_AUTH_RC, T_GH_EDIT_RC, T_GH_LABEL_CREATE_RC.
+set -uo pipefail
+CAP="${T_CAP:-$HOME/.captures}"; FIX="${T_GH_DIR:-$HOME/.gh-fixtures}"
+mkdir -p "$CAP"
+mut() { printf '%s\n' "$*" >>"$CAP/gh-mutations.log"; }
+
+jq_expr=""
+args=("$@")
+for ((i = 0; i < ${#args[@]}; i++)); do
+  if [[ "${args[i]}" == "--jq" ]] && (( i + 1 < ${#args[@]} )); then jq_expr="${args[i+1]}"; fi
+done
+emit() { # $1 = json; apply caller --jq when present
+  if [[ -n "$jq_expr" ]]; then jq -r "$jq_expr" <<<"$1"; else printf '%s\n' "$1"; fi
+}
+
+case "${1:-} ${2:-}" in
+  "auth status") exit "${T_GH_AUTH_RC:-0}" ;;
+  "api "*)
+    if [[ "${2:-}" == */issues/events* ]]; then
+      emit "$(cat "$FIX/events.json" 2>/dev/null || echo '[]')"; exit 0
+    fi
+    mut "UNMATCHED $*"; exit 1 ;;
+  "issue list")
+    emit "$(cat "$FIX/issue-list.json" 2>/dev/null || echo '[]')"; exit 0 ;;
+  "issue view")
+    f="$FIX/issues/${3:-none}.json"
+    [[ -f "$f" ]] || exit 1
+    emit "$(cat "$f")"; exit 0 ;;
+  "issue edit")   mut "$*"; exit "${T_GH_EDIT_RC:-0}" ;;
+  "issue create") mut "$*"; echo "https://github.com/stub-owner/stub-repo/issues/999"; exit 0 ;;
+  "label create") mut "$*"; exit "${T_GH_LABEL_CREATE_RC:-0}" ;;
+  "label edit")   mut "$*"; exit 0 ;;
+  "pr list")      emit "[]"; exit 0 ;;
+  "pr create")    mut "$*"; echo "https://github.com/stub-owner/stub-repo/pull/999"; exit 0 ;;
+  "pr merge"|"pr comment"|"pr edit") mut "$*"; exit 0 ;;
+  "pr checks")    echo "all checks passing"; exit 0 ;;
+  "run list")     emit "[]"; exit 0 ;;
+  *) mut "UNMATCHED $*"; exit 1 ;;
+esac

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# tests/stubs/fake-agent — the scripted agent runner.
+# Always captures its interface (argv, ILOOP_* env, cwd); then runs the
+# per-test scenario in $FAKE_AGENT_SCRIPT (full shell, confined to the
+# sandbox by HOME/config); finally emits a claude-CLI-style stream-json
+# result line unless told not to.
+# Knobs: FAKE_AGENT_SCRIPT, FAKE_AGENT_COST, FAKE_AGENT_NO_RESULT, FAKE_AGENT_RC.
+set -uo pipefail
+CAP="${T_CAP:-$HOME/.captures}"
+mkdir -p "$CAP"
+{
+  for a in "$@"; do printf '%s\n---ARG---\n' "$a"; done
+} >"$CAP/agent-argv.txt"
+{
+  env | grep '^ILOOP_' | sort
+  printf 'PWD=%s\n' "$PWD"
+} >"$CAP/agent-env.txt"
+
+if [[ -n "${FAKE_AGENT_SCRIPT:-}" && -f "${FAKE_AGENT_SCRIPT:-}" ]]; then
+  # shellcheck source=/dev/null
+  source "$FAKE_AGENT_SCRIPT"
+fi
+
+if [[ "${FAKE_AGENT_NO_RESULT:-0}" != 1 ]]; then
+  printf '{"type":"result","subtype":"success","total_cost_usd":%s}\n' "${FAKE_AGENT_COST:-0.42}"
+fi
+exit "${FAKE_AGENT_RC:-0}"

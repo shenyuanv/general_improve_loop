@@ -56,17 +56,33 @@ $EDITOR /path/to/your/project/ops/loop.config.sh   # fill in your facts
 
 Requirements: `git`, `gh` (authenticated), `jq`, an agent CLI (default:
 `claude`), macOS (launchd) or Linux (cron). Full walkthrough:
-`docs/INTEGRATION.md`. Day-2 operations: `docs/OPERATIONS.md`.
+`docs/INTEGRATION.md`. Day-2 operations: `docs/OPERATIONS.md`. Developing
+the engine itself additionally needs `shellcheck` (part of its gates).
+
+## Self-hosting
+
+The engine dogfoods itself: this repo is its own target project. Loops edit
+it through the PR lane but execute from a separately promoted live checkout,
+so a change only runs after fixer → adversarial verifier → CI → promote →
+verify-live (with mechanical rollback). `bash tests/run.sh` is the floor
+test suite; `bin/scorecard.sh` prints the loop-health numbers. Details:
+`docs/SELF-HOSTING.md`.
 
 ## Layout
 
 ```
 bin/         the mechanical shell (wrapper, preflight, notify, scheduler)
+             + scorecard.sh (loop-health metrics for any adopter)
 agents/      one directory per agent; AGENT.md is its exact prompt;
              subagents/ holds the per-issue / per-PR / per-focus prompts
 contracts/   the shared rules every agent obeys (queue state machine,
              issue format, write policy, safety floors, digest format)
 config/      loop.config.example.sh — every project-specific fact
 templates/   files dropped into the target project (DIRECTION, labels, …)
-docs/        DESIGN (architecture), INTEGRATION, OPERATIONS, AUDIT-CHECKLIST
+tests/       hermetic floor tests (zero-dep runner) + prompt-lint —
+             the engine's own GATES
+selfhost/    promotion gate for self-hosting (promote / verify-live /
+             rollback / drift · fixture generator · e2e rubric)
+docs/        DESIGN (architecture), INTEGRATION, OPERATIONS,
+             AUDIT-CHECKLIST, SELF-HOSTING
 ```
