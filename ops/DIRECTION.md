@@ -58,4 +58,3 @@ notify_on: [failure, deploy, rollback, incident, pending-ack, new-user, decision
   verifier treats a leftover line as an incomplete fix.
 - Feature work never enters the automated lane; file it
   `action:interactive` and wait for me.
-drill tamper 1783010270
