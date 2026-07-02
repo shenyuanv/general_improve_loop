@@ -1,5 +1,5 @@
 {
-  "ts": "2026-07-02T16:41:03Z",
+  "ts": "2026-07-02T16:50:29Z",
   "week": "2026-W27",
   "window_days": 14,
   "project": "general_improve_loop",
@@ -24,7 +24,7 @@
     "open": {
       "loop_filed": 0,
       "accepted": 4,
-      "action_loop": 5,
+      "action_loop": 6,
       "decisions": 1,
       "bugs": 6,
       "loop_prs": 0
@@ -44,7 +44,7 @@
   },
   "tester_latest": null,
   "ratchet": {
-    "loc_product": 2547,
+    "loc_product": 2648,
     "loc_tests": 1369,
     "deps": 0,
     "tests_collected": 35

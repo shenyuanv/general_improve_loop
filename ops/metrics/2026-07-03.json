@@ -1,0 +1,23 @@
+{
+  "date": "2026-07-03",
+  "run_id": "20260703-004533",
+  "mode": "NORMAL",
+  "gates": {
+    "green": true,
+    "results": [
+      {"cmd": "bash tests/run.sh", "rc": 0, "seconds": 31, "collected": 35, "passed": 33, "failed": 0, "xfail": 2, "xpass": 0},
+      {"cmd": "bash tests/prompt-lint.sh", "rc": 0, "seconds": 0, "violations": 0, "warns": 1},
+      {"cmd": "shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh", "rc": 0, "seconds": 1}
+    ],
+    "ci_main": "success",
+    "known_failures_pins": ["t10-breaker-rearm", "t35-notify-quote-crush"]
+  },
+  "security": {"auth_failures_24h": 0, "agent_auth_ok": true, "gh_auth_ok": true, "nogo_reverts_14d": 0, "self_accept_strips_14d": 0, "breaker_trips_14d": 0, "open_security_shaped_bugs": 1, "secrets_in_config": 0},
+  "data_safety": {"main_unpushed_commits": 0, "live_drift": false, "promotions_total": 2, "rollbacks_exercised": 0, "rollback_test_coverage": 0, "journeys_ledger_rows": 0, "state_dir_offsite_backup": false, "markers": {"paused": false, "demoted": false, "blocked": false}},
+  "deployed": {"live_commit": "e8de994", "main_commit": "e8de994", "drift": "current", "drift_exit": 0, "verify_quick": "healthy at e8de994", "deploy_knob": "ack", "deployed_tonight": false, "blocked_marker": false, "last_promotion_ts": "2026-07-02T16:42:21Z", "days_since_last_promotion": 0, "promotions_total": 2},
+  "telemetry": {"runs_total": 1, "runs_by_result": {"paused": 1}, "cost_total_usd": 0, "nogo_reverts": 0, "timeouts": 0, "queue": {"open_issues": 8, "open_loop_prs": 0, "closed_24h": 0, "human_filed_24h": 7, "loop_filed_tonight": 1, "decisions_pending": 1}},
+  "trends": {"pass_rate_14d": null, "latency_median": null, "days_since_journey": null, "cost_by_loop": {"orchestrator": 0.0}, "bootstrap": true, "liveness_clock_start": "2026-07-03"},
+  "repo": {"loc_product": 2648, "loc_tests": 1369, "deps": 0, "tests_collected": 35},
+  "deltas_vs_yesterday": null,
+  "notes": "First nightly metrics file — no prior daily to diff against. Ratchet baseline: W27 scorecard loc_product 2547 -> 2648 tonight (+101, explained by baseline ops artifacts in e8de994: HARNESS_AUDIT.md + scorecard JSON). success_rate 0 in scorecard is the single intentional PAUSE-drill row, not a reliability miss."
+}
