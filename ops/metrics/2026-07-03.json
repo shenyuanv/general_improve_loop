@@ -1,23 +1,30 @@
 {
   "date": "2026-07-03",
   "run_id": "20260703-004533",
+  "rerun_id": "20260703-012902",
   "mode": "NORMAL",
   "gates": {
     "green": true,
     "results": [
+      {"cmd": "bash tests/run.sh", "rc": 0, "seconds": 34, "collected": 36, "passed": 35, "failed": 0, "xfail": 1, "xpass": 0},
+      {"cmd": "bash tests/prompt-lint.sh", "rc": 0, "seconds": 1, "violations": 0, "warns": 1},
+      {"cmd": "shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh", "rc": 0, "seconds": 0}
+    ],
+    "ci_main": "success",
+    "known_failures_pins": ["t35-notify-quote-crush"],
+    "first_run_results": [
       {"cmd": "bash tests/run.sh", "rc": 0, "seconds": 31, "collected": 35, "passed": 33, "failed": 0, "xfail": 2, "xpass": 0},
       {"cmd": "bash tests/prompt-lint.sh", "rc": 0, "seconds": 0, "violations": 0, "warns": 1},
       {"cmd": "shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh", "rc": 0, "seconds": 1}
-    ],
-    "ci_main": "success",
-    "known_failures_pins": ["t10-breaker-rearm", "t35-notify-quote-crush"]
+    ]
   },
-  "security": {"auth_failures_24h": 0, "agent_auth_ok": true, "gh_auth_ok": true, "nogo_reverts_14d": 0, "self_accept_strips_14d": 0, "breaker_trips_14d": 0, "open_security_shaped_bugs": 1, "secrets_in_config": 0},
-  "data_safety": {"main_unpushed_commits": 0, "live_drift": false, "promotions_total": 2, "rollbacks_exercised": 0, "rollback_test_coverage": 0, "journeys_ledger_rows": 0, "state_dir_offsite_backup": false, "markers": {"paused": false, "demoted": false, "blocked": false}},
-  "deployed": {"live_commit": "e8de994", "main_commit": "e8de994", "drift": "current", "drift_exit": 0, "verify_quick": "healthy at e8de994", "deploy_knob": "ack", "deployed_tonight": false, "blocked_marker": false, "last_promotion_ts": "2026-07-02T16:42:21Z", "days_since_last_promotion": 0, "promotions_total": 2},
-  "telemetry": {"runs_total": 1, "runs_by_result": {"paused": 1}, "cost_total_usd": 0, "nogo_reverts": 0, "timeouts": 0, "queue": {"open_issues": 8, "open_loop_prs": 0, "closed_24h": 0, "human_filed_24h": 7, "loop_filed_tonight": 1, "decisions_pending": 1}},
-  "trends": {"pass_rate_14d": null, "latency_median": null, "days_since_journey": null, "cost_by_loop": {"orchestrator": 0.0}, "bootstrap": true, "liveness_clock_start": "2026-07-03"},
-  "repo": {"loc_product": 2648, "loc_tests": 1369, "deps": 0, "tests_collected": 35},
+  "security": {"auth_failures_24h": 0, "agent_auth_ok": true, "gh_auth_ok": true, "nogo_reverts_14d": 0, "self_accept_strips_14d": 0, "breaker_trips_14d": 0, "open_security_shaped_bugs": 1, "secrets_in_config": 0, "stale_local_loop_branches": 3},
+  "data_safety": {"main_unpushed_commits": 0, "live_drift": false, "promotions_total": 3, "rollbacks_exercised": 0, "rollback_test_coverage": 0, "journeys_ledger_rows": 1, "state_dir_offsite_backup": false, "markers": {"paused": false, "demoted": false, "blocked": false}},
+  "deployed": {"live_commit": "a51444e", "main_commit": "a51444e", "drift": "current", "drift_exit": 0, "verify_quick": "healthy at a51444e", "deploy_knob": "ack", "deployed_tonight": true, "deploy_actor": "owner-manual (ack-compliant, outside loop run windows)", "blocked_marker": false, "last_promotion_ts": "2026-07-02T17:27:21Z", "days_since_last_promotion": 0, "promotions_total": 3},
+  "telemetry": {"runs_total": 5, "runs_by_result": {"success": 4, "paused": 1}, "cost_total_usd": 26.75, "nogo_reverts": 0, "timeouts": 0, "rc_nonzero": 0, "queue": {"open_issues": 11, "open_loop_prs": 0, "closed_24h": 2, "prs_merged_24h": 2, "prs_closed_unmerged_24h": 1, "human_filed_24h": 7, "loop_filed_tonight": 6, "decisions_pending": 1, "accepted_eligible_tonight": 5, "max_fixes_per_night": 3}},
+  "trends": {"pass_rate_14d": {"rows": 1, "PASS": 0, "PARTIAL": 1, "FAIL": 0}, "latency_median": {"metric": "install_to_first_green_s", "median_7d": 58, "latest": 58, "regression": false, "n": 1}, "days_since_journey": 0, "days_since_sweep": null, "cost_by_loop": {"orchestrator": 8.69, "e2e-user": 5.23, "fixer": 7.02, "pr-verifier": 5.81}, "cost_median_gate": "inactive <7 runs/loop", "bootstrap": true, "liveness_clock_start": "2026-07-03"},
+  "repo": {"loc_product": 2782, "loc_tests": 1399, "deps": 0, "tests_collected": 36},
   "deltas_vs_yesterday": null,
-  "notes": "First nightly metrics file — no prior daily to diff against. Ratchet baseline: W27 scorecard loc_product 2547 -> 2648 tonight (+101, explained by baseline ops artifacts in e8de994: HARNESS_AUDIT.md + scorecard JSON). success_rate 0 in scorecard is the single intentional PAUSE-drill row, not a reliability miss."
+  "deltas_vs_first_run": {"loc_product": 134, "loc_tests": 30, "tests_collected": 1, "known_failures_pins": -1, "open_issues": 3, "promotions": 1, "explanation": "PRs #12/#14 merged (t10 pin removed, t36 added; bin/ net ~0 LOC) + loop ops commits (digest +105, metrics +29); issues #15 #16 filed this re-run, #1 #4 closed by merges; owner promoted live to a51444e"},
+  "notes": "Re-run 20260703-012902 (~01:29 local) updated this file; first-run values preserved under gates.first_run_results and deltas_vs_first_run. Between the runs the owner manually triaged: promoted live e8de994->a51444e (ack-compliant), closed PR #13 unmerged (fixer re-fixes #2 fresh, keep t35 flip), accepted #9/#10/#11. Known risk recorded: stale local loop/fix-GH{1,2,4} branches block the #2 re-fix at 05:03 unless pruned (issue #15; one-liner in digest Needs-you)."
 }
