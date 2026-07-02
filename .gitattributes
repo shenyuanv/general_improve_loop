@@ -1,0 +1,3 @@
+# improve-loop: harness state must never ship in release archives
+# (git archive honors export-ignore)
+/ops export-ignore

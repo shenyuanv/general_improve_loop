@@ -6,12 +6,16 @@
 # lint-clean shell (shellcheck), and a real floor drill (a planted no-go
 # violation in a throwaway fixture must be caught with exit 3). This proves
 # the deployed floors BITE, not merely that files copied.
+# --quick: the cheap health probe (fits preflight's 30 s cap) — live exists,
+# tree clean, wrapper parses. Full mode is the post-promotion gate.
 set -uo pipefail
 
 LIVE="$HOME/.improve-loop/general_improve_loop/live"
+QUICK=0
 while (( $# )); do
   case "$1" in
     --live) LIVE="${2:?}"; shift 2 ;;
+    --quick) QUICK=1; shift ;;
     *) echo "unknown arg $1" >&2; exit 1 ;;
   esac
 done
@@ -22,6 +26,13 @@ fail() { echo "verify-live FAIL: $*" >&2; exit 1; }
 
 [[ -d "$LIVE/.git" ]] || fail "no live checkout at $LIVE"
 [[ -z "$(git -C "$LIVE" status --porcelain 2>/dev/null)" ]] || fail "live tree dirty"
+
+if (( QUICK )); then
+  bash -n "$LIVE/bin/run-loop.sh" || fail "run-loop.sh does not parse"
+  bash -n "$LIVE/bin/preflight.sh" || fail "preflight.sh does not parse"
+  echo "verify-live --quick: healthy at $(git -C "$LIVE" rev-parse --short HEAD)"
+  exit 0
+fi
 
 echo "verify-live: [1/4] live test suite"
 ( cd "$LIVE" && "$TO" 600 bash tests/run.sh ) || fail "live tests red"

@@ -10,7 +10,8 @@ DIRECTION Focus, universal write rules.
 
 ## Do
 
-Read the last ~14 rows of `ops/ledger/journeys.jsonl`, the latest
+Read the newest `ops/metrics/scorecard-*.json` (the gardener refreshes it
+nightly), the last ~14 rows of `ops/ledger/journeys.jsonl`, the latest
 `ops/ledger/tester.jsonl` row, and `$ILOOP_STATE/runs.jsonl`, then report:
 
 1. **Pass-rate trend** — journeys PASS/PARTIAL/FAIL over the window;

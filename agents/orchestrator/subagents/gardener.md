@@ -26,7 +26,10 @@ universal write rules, `DIGEST_RETENTION_DAYS`.
    dependency count (parse the manifest), tests collected (from tonight's
    gate output). Compare yesterday's metrics file: tests down, or product
    LOC jump >200 in a day with no merged loop PR or accepted issue
-   explaining it ⇒ ATTENTION finding.
+   explaining it ⇒ ATTENTION finding. Also run
+   `bash "$ILOOP_ROOT/bin/scorecard.sh" "$ILOOP_CONFIG"` — it refreshes
+   this ISO week's scorecard under ops/metrics/ (an ops/ write the
+   orchestrator commits); quote week-over-week deltas in your DIGEST.
 4. **Ops hygiene** — `ops/` and `$ILOOP_STATE` growing anomalously; stray
    files in ops/ that no contract defines; leftover worktrees
    (`git worktree list` should be just the main tree by morning).
