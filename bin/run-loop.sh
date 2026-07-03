@@ -74,6 +74,29 @@ check_nogo() { # $1=repo dir, $2=base sha; reverts violators, echoes "<reverted>
   echo "$n $f"
 }
 
+# ── Floor addendum (#25): no-go revert against the FETCHED tip ───────────
+# Squash-merges and worktree pushes land on origin without moving local
+# HEAD; a violator there must be reverted on the fetched tip in a throwaway
+# worktree and PUSHED — a revert that stays local leaves origin violated.
+# A failed push is a FAILED revert (same needs-human escalation as #3).
+check_nogo_remote() { # $1=repo dir, $2=base sha, $3=fetched tip sha, $4=branch; echoes "<reverted> <failed>"
+  local dir=$1 base=$2 tip=$3 branch=$4 wt n=0 f=0 hits
+  hits=$(git -C "$dir" log --format=%H "$base".."$tip" -- "${NOGO_PATHS[@]}" 2>/dev/null | grep -c .)
+  (( hits == 0 )) && { echo "0 0"; return; }
+  wt="$STATE_DIR/nogo-wt-$TS"
+  if git -C "$dir" worktree add --detach "$wt" "$tip" >>"$LOG" 2>&1; then
+    read -r n f <<<"$(check_nogo "$wt" "$base")"
+    if (( n > 0 )) && ! git -C "$wt" push origin "HEAD:refs/heads/$branch" >>"$LOG" 2>&1; then
+      log "no-go revert push FAILED ($n stranded revert(s)) — origin/$branch still violated; needs human"
+      f=$((f + n)); n=0
+    fi
+    git -C "$dir" worktree remove --force "$wt" >>"$LOG" 2>&1
+  else
+    f=$hits; log "no-go remote revert: worktree add failed — $hits violation(s) NOT reverted; needs human"
+  fi
+  echo "$n $f"
+}
+
 # ── Floor: self-accept guard — loops never authorize their own work ──────
 # A single-identity setup can't attribute a label event to owner vs loop,
 # so stripping is gated on evidence in THIS run's transcript ($LOG) that
@@ -242,7 +265,26 @@ fi
 log "agent exited rc=$RC cost=\$$COST"
 
 # ── 5. post-run floors ──────────────────────────────────────────────────────
-read -r NOGO_OK NOGO_FAILED <<<"$(check_nogo "$PROJECT_DIR" "$HEAD_BEFORE")"
+# Floors scan what actually LANDED, not just local HEAD movement: merges and
+# worktree pushes move origin while the checkout stands still (#25). Fetch
+# and, when origin is ahead, measure against the fetched tip; offline or no
+# remote degrades to local HEAD, logged.
+FLOOR_TIP="HEAD"
+FLOOR_BRANCH=$(git -C "$PROJECT_DIR" rev-parse --abbrev-ref HEAD 2>/dev/null)
+if [[ -n "$FLOOR_BRANCH" && "$FLOOR_BRANCH" != "HEAD" ]] && \
+   git -C "$PROJECT_DIR" fetch origin "$FLOOR_BRANCH" >>"$LOG" 2>&1; then
+  FETCHED=$(git -C "$PROJECT_DIR" rev-parse --verify --quiet FETCH_HEAD 2>/dev/null)
+  if [[ -n "$FETCHED" ]] && ! git -C "$PROJECT_DIR" merge-base --is-ancestor "$FETCHED" HEAD 2>/dev/null; then
+    FLOOR_TIP="$FETCHED"
+  fi
+else
+  log "floor fetch unavailable (offline/no remote/detached) — no-go scan and diff accounting degrade to local HEAD"
+fi
+if [[ "$FLOOR_TIP" == "HEAD" ]]; then
+  read -r NOGO_OK NOGO_FAILED <<<"$(check_nogo "$PROJECT_DIR" "$HEAD_BEFORE")"
+else
+  read -r NOGO_OK NOGO_FAILED <<<"$(check_nogo_remote "$PROJECT_DIR" "$HEAD_BEFORE" "$FLOOR_TIP" "$FLOOR_BRANCH")"
+fi
 NOGO_REVERTS=$(( NOGO_OK + NOGO_FAILED ))   # a failed revert is still a violation
 if (( NOGO_OK > 0 )); then
   printf '%s no-go violation: %s commit(s) reverted by wrapper\n' "$(date +%F)" "$NOGO_OK" >"$PROJECT_DIR/ops/DEMOTED"
@@ -260,8 +302,8 @@ fi
 QUEUE_LINT=$(check_queue_lint "$START_ISO")
 (( QUEUE_LINT > 0 )) && notify "$PROJECT_NAME $LOOP" "queue lint: $QUEUE_LINT malformed issue(s) filed this run — see $(basename "$LOG")"
 prune_stale_loop_branches
-COMMITS=$(git rev-list --count "$HEAD_BEFORE"..HEAD 2>/dev/null || echo 0)
-read -r INS DEL <<<"$(git diff --numstat "$HEAD_BEFORE"..HEAD 2>/dev/null | awk '{i+=$1; d+=$2} END{printf "%d %d", i, d}')"
+COMMITS=$(git rev-list --count "$HEAD_BEFORE".."$FLOOR_TIP" 2>/dev/null || echo 0)
+read -r INS DEL <<<"$(git diff --numstat "$HEAD_BEFORE".."$FLOOR_TIP" 2>/dev/null | awk '{i+=$1; d+=$2} END{printf "%d %d", i, d}')"
 
 # ── 6. digest guarantee, per-run notify fan-out, run history ───────────────
 if [[ "$LOOP" == "orchestrator" && ! -f "$DIGEST" ]]; then
