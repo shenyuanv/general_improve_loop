@@ -101,14 +101,16 @@ check_queue_lint() { # $1=since ISO; logs violations, echoes count
   local since=$1 n=0 inum
   while read -r inum; do
     [[ -z "$inum" ]] && continue
-    local j actions comps isbug hasrepro
+    local j actions comps isbug hasrepro isloop hasverify
     j=$(gh issue view "$inum" -R "$GH_REPO" --json labels,body 2>/dev/null) || continue
     actions=$(jq -r '[.labels[].name | select(startswith("action:"))] | length' <<<"$j")
     comps=$(jq -r '[.labels[].name | select(startswith("component:"))] | length' <<<"$j")
     isbug=$(jq -r '[.labels[].name | select(.=="bug")] | length' <<<"$j")
+    isloop=$(jq -r '[.labels[].name | select(.=="action:loop")] | length' <<<"$j")
     hasrepro=$(jq -r '.body | test("(?i)##? ?Repro|Repro:") | if . then 1 else 0 end' <<<"$j")
-    if [[ "$actions" != 1 || "$comps" == 0 || ( "$isbug" == 1 && "$hasrepro" == 0 ) ]]; then
-      n=$((n+1)); log "queue lint: #$inum malformed (action=$actions comp=$comps bug=$isbug repro=$hasrepro) — no executor will pick it up"
+    hasverify=$(jq -r '.body | test("(?i)##? ?Verify|Verify:") | if . then 1 else 0 end' <<<"$j")
+    if [[ "$actions" != 1 || "$comps" == 0 || ( "$isbug" == 1 && "$hasrepro" == 0 ) || ( "$isloop" == 1 && "$hasverify" == 0 ) ]]; then
+      n=$((n+1)); log "queue lint: #$inum malformed (action=$actions comp=$comps bug=$isbug repro=$hasrepro verify=$hasverify) — no executor will pick it up"
     fi
   done < <(gh issue list -R "$GH_REPO" --label loop-filed --state open \
     --search "created:>=${since%T*}" --json number --jq '.[].number' 2>/dev/null)
