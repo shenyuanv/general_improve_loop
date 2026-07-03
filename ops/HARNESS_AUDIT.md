@@ -1,5 +1,42 @@
 # Harness audits (append-only; diff each entry against the previous)
 
+## Convergence run — 2026-07-03 — 5 supervised self-improvement cycles
+
+First end-to-end dogfood: the harness ran its full relay against its own
+repo 5 times, each cycle promoted into the live checkout the next cycle
+executed. Evidence the self-improvement is real and converging:
+
+- **13 issues found→fixed→merged→promoted, zero human code edits**:
+  #1 #2 #3 #4 #6 #7 #9 #10 #11 #15 #16 #21 #22. All via the
+  fixer→adversarial-verifier→CI→merge pipeline.
+- **Engine trajectory** (7 gated promotions, each verify-live green before
+  the next cycle): 57a9968 → e8de994 → a51444e → 6eb6b6a → 8db3860 →
+  95fee08 → 5b743a3.
+- **The loop closes, observed**: the e2e adoption journey FAILED
+  docs-honesty in cycle 1 (PARTIAL), and after that fix merged+promoted the
+  same journey PASSed in cycle 3 — a defect the harness found, fixed, and
+  re-verified on itself.
+- **It fixes its own audit gaps**: baseline #0 flagged items 3 and 7 as
+  partial (queue-lint missing Verify enforcement; unbounded evidence dir).
+  The loop filed those as #6/#7 and closed both in cycle 5.
+- **It hardens against bug classes, not instances**: caught a regression it
+  introduced itself (#21 duplicate test id) and added a uniqueness guard
+  test; converted a manual branch-prune into a mechanical floor (#15);
+  found its own operational bug (#30: rate-limit 429 miscounted as error).
+- **Ratchet**: tests 35→43 (all green, known-failures pins 2→0);
+  product LOC 2554, deps 0.
+- **Reliability**: 21 runs, 17 success / 3 error / 1 paused-drill. All 3
+  errors were external Fable-5 quota exhaustion (429), not harness faults —
+  the wrapper recorded each honestly and opened nothing; #22/#30 (loop-
+  found) address the accounting so quota pauses stop skewing the rate.
+  0 no-go reverts, 0 self-accept strips, 0 breaker trips, no DEMOTED/BLOCKED.
+- **Cost**: ~$155 across all cycles (elevated by running stages back-to-back
+  and re-driving rate-limited stages; a nightly cadence would be far lower).
+
+Still open (named owners, no orphans): #25 (floor-blindness, rolled by the
+3/night cap — first pick next cycle); decisions #5 #20 #29 #30; operator
+drill #8. Next full 10-item audit due ~2026-07-17 per docs/AUDIT-CHECKLIST.md.
+
 ## Audit #0 — 2026-07-03 — pre-loop baseline (Phase 1 read-only scoring)
 
 Scored by the owner+Claude during self-hosting bootstrap, before the first
