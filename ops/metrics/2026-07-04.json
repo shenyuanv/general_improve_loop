@@ -92,8 +92,15 @@
     "open_issues": 5,
     "open_loop_prs": 0,
     "orphans": 0,
-    "cooling": [35, 40, 41, 44],
-    "operator_items": [49],
+    "cooling": [
+      35,
+      40,
+      41,
+      44
+    ],
+    "operator_items": [
+      49
+    ],
     "open_decisions": 0,
     "fixer_tonight": "expected no-op (all cooling past 05:03 local)",
     "fixer_0705_eligible_vs_cap": "~8 vs 3 (standing backlog watch)"
@@ -128,5 +135,94 @@
     "open_issues": "-3 (8 -> 5)",
     "cost_usd_24h": "+20.84 (189.54 -> 210.38)"
   },
-  "notes": "Off-schedule pass. No issues filed, none needed: all findings dedup to open #44 (deploys.jsonl backfilled again this run) and #35, or are digest notes. #49 = drill residue, close recommended to owner. git fetch --prune run (6 stale remote-tracking refs cleared)."
+  "notes": "Off-schedule pass. No issues filed, none needed: all findings dedup to open #44 (deploys.jsonl backfilled again this run) and #35, or are digest notes. #49 = drill residue, close recommended to owner. git fetch --prune run (6 stale remote-tracking refs cleared).",
+  "scheduled_rerun": {
+    "run_id": "20260704-033302",
+    "trigger": "scheduled (first --scheduled relay run; seeds Focus #2 Option-A meter)",
+    "mode": "NORMAL",
+    "gates": {
+      "green": true,
+      "tests": {
+        "rc": 0,
+        "seconds": 52,
+        "collected": 48,
+        "passed": 48,
+        "failed": 0,
+        "xfail": 0,
+        "xpass": 0
+      },
+      "prompt_lint": {
+        "rc": 0,
+        "seconds": 1,
+        "violations": 0
+      },
+      "shellcheck": {
+        "rc": 0,
+        "seconds": 0
+      }
+    },
+    "ci_main": "ci green at 8c705fe (later commits ops-only); nightly-drills: 0 event=schedule fires ever vs 6 dispatch \u2014 watch, escalate 07-05 if still zero; 16:05Z red = closed drill #49",
+    "deployed": {
+      "live_commit": "27553bf",
+      "main_tip": "27553bf",
+      "drift": "none (drift.sh exit 0; verify-live --quick healthy)",
+      "deploy_attempted": false,
+      "rollbacks": 0,
+      "blocked_marker": false,
+      "untraced_promote_backfilled": "2026-07-03T16:35:51Z dfadb04->27553bf (#44 evidence, 5th consecutive; deploys.jsonl row appended this run)"
+    },
+    "queue": {
+      "open_issues": 4,
+      "cooling": [
+        35,
+        40,
+        41,
+        44
+      ],
+      "orphans": 0,
+      "open_loop_prs": 0,
+      "open_decisions": 0,
+      "note": "#49 owner-closed 16:22Z; today's 05:03 fixer expected no-op; 07-05 fixer 4 eligible vs cap 3"
+    },
+    "security": {
+      "auth_failures_24h": 0,
+      "nogo_reverts": 0,
+      "self_accept_strips": 0,
+      "breaker_trips": 0,
+      "errors_24h": 2,
+      "errors_since_0700Z": 0,
+      "gh_active_account": "shenyuanv (pin holding)"
+    },
+    "trends": {
+      "pass_rate_14d": "PARTIAL->PASS->PASS (3 rows)",
+      "latency_median_s": 58,
+      "latency_latest_s": 64,
+      "latency_ratio": 1.1,
+      "duration_s_series": [
+        175,
+        292,
+        400
+      ],
+      "days_since_journey": 0.13,
+      "diff_accounting": "4/4 newest byte-exact",
+      "cost_latest_x_median": {
+        "orchestrator": 1.38,
+        "fixer": 0.14,
+        "pr-verifier": 0.17,
+        "e2e-user": 0.88,
+        "manager": null
+      },
+      "max_run_cost_usd": 16.69
+    },
+    "repo": {
+      "loc_product": 3287,
+      "loc_tests": 1928,
+      "deps": 0,
+      "tests_collected": 48,
+      "delta_vs_midnight": "0 across all four (3 ops-only commits since)"
+    },
+    "issues_filed": 0,
+    "notify_lines": 0,
+    "notes": "All 4 subagents STATUS ok. No deploy, no grooming in scope, no code commits. Watches: nightly-drills cron fire, 07-05 scorecard scheduled_success_rate non-null, 04:33 journey row, fixer oversubscription, journey duration growth."
+  }
 }
