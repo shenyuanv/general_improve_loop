@@ -45,15 +45,15 @@ record_run() { # $1=result
 }
 
 # ── Floor: no-go revert — commits touching forbidden paths are reverted ──
-check_nogo() { # $1=repo dir, $2=base sha; reverts violators, echoes count
-  local dir=$1 base=$2 n=0 sha
+check_nogo() { # $1=repo dir, $2=base sha; reverts violators, echoes "<reverted> <failed>"
+  local dir=$1 base=$2 n=0 f=0 sha
   for sha in $(git -C "$dir" log --format=%H "$base"..HEAD -- "${NOGO_PATHS[@]}" 2>/dev/null); do
     if git -C "$dir" revert --no-edit "$sha" >>"$LOG" 2>&1; then n=$((n+1)); else
       git -C "$dir" revert --abort >/dev/null 2>&1
-      log "no-go revert FAILED for $sha — needs human"
+      f=$((f+1)); log "no-go revert FAILED for $sha — needs human"
     fi
   done
-  echo "$n"
+  echo "$n $f"
 }
 
 # ── Floor: self-accept guard — loops never authorize their own work ──────
@@ -89,7 +89,7 @@ check_queue_lint() { # $1=since ISO; logs violations, echoes count
 }
 
 case "$LOOP" in
-  --check-nogo)        LOG=/dev/stderr; N=$(check_nogo "$PROJECT_DIR" "$CHECK_ARG"); echo "nogo_reverts=$N"; (( N > 0 )) && exit 3 || exit 0 ;;
+  --check-nogo)        LOG=/dev/stderr; read -r N F <<<"$(check_nogo "$PROJECT_DIR" "$CHECK_ARG")"; echo "nogo_reverts=$N nogo_revert_failures=$F"; (( N + F > 0 )) && exit 3 || exit 0 ;;
   --check-self-accept) LOG=/dev/stderr; N=$(check_self_accept "$CHECK_ARG"); echo "self_accepts_stripped=$N"; (( N > 0 )) && exit 3 || exit 0 ;;
   --check-queue-lint)  LOG=/dev/stderr; N=$(check_queue_lint "$CHECK_ARG"); echo "queue_lint_violations=$N"; (( N > 0 )) && exit 3 || exit 0 ;;
 esac
@@ -164,10 +164,15 @@ COST=$(grep '"type":"result"' "$LOG" | tail -1 | jq -r '.total_cost_usd // 0' 2>
 log "agent exited rc=$RC cost=\$$COST"
 
 # ── 5. post-run floors ──────────────────────────────────────────────────────
-NOGO_REVERTS=$(check_nogo "$PROJECT_DIR" "$HEAD_BEFORE")
-if (( NOGO_REVERTS > 0 )); then
-  printf '%s no-go violation: %s commit(s) reverted by wrapper\n' "$(date +%F)" "$NOGO_REVERTS" >"$PROJECT_DIR/ops/DEMOTED"
-  notify "$PROJECT_NAME $LOOP" "NO-GO VIOLATION: $NOGO_REVERTS commit(s) reverted; loops demoted to propose-only"
+read -r NOGO_OK NOGO_FAILED <<<"$(check_nogo "$PROJECT_DIR" "$HEAD_BEFORE")"
+NOGO_REVERTS=$(( NOGO_OK + NOGO_FAILED ))   # a failed revert is still a violation
+if (( NOGO_OK > 0 )); then
+  printf '%s no-go violation: %s commit(s) reverted by wrapper\n' "$(date +%F)" "$NOGO_OK" >"$PROJECT_DIR/ops/DEMOTED"
+  notify "$PROJECT_NAME $LOOP" "NO-GO VIOLATION: $NOGO_OK commit(s) reverted; loops demoted to propose-only"
+fi
+if (( NOGO_FAILED > 0 )); then
+  printf '%s no-go violation: %s commit(s) could NOT be reverted — needs human\n' "$(date +%F)" "$NOGO_FAILED" >>"$PROJECT_DIR/ops/DEMOTED"
+  notify "$PROJECT_NAME $LOOP" "NO-GO VIOLATION: $NOGO_FAILED commit(s) could NOT be reverted — needs human; loops demoted to propose-only"
 fi
 SELF_ACCEPTS=$(check_self_accept "$START_ISO")
 if (( SELF_ACCEPTS > 0 )); then
