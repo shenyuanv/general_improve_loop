@@ -1,0 +1,65 @@
+name: file-drill-issue
+description: >
+  File (or comment on) ONE well-formed loop issue when a CI drill fails.
+  Dedup: an open issue whose title carries the marker gets a comment with
+  the new run URL instead of a duplicate filing. Bodies follow
+  contracts/issue-format.md so the queue lint accepts them.
+inputs:
+  marker:
+    description: "dedup marker, e.g. [nightly-drills]"
+    required: true
+  workflow-name:
+    description: "human name of the failing workflow"
+    required: true
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        MARKER: ${{ inputs.marker }}
+        WF: ${{ inputs.workflow-name }}
+        RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      run: |
+        set -uo pipefail
+        existing="$(gh issue list -R "$GITHUB_REPOSITORY" --state open \
+          --search "$MARKER in:title" --json number --jq '.[0].number // empty')"
+        if [ -n "$existing" ]; then
+          gh issue comment "$existing" -R "$GITHUB_REPOSITORY" \
+            --body "Still failing: $RUN_URL (new run, same drill — deduped onto this issue)."
+          echo "commented on existing #$existing"
+          exit 0
+        fi
+        body="$(mktemp)"
+        {
+          echo "## Found"
+          echo "Scheduled CI drill \`$WF\` failed on a clean GitHub runner (filed mechanically by .github/actions/file-drill-issue — no agent involved)."
+          echo
+          echo "## Evidence"
+          echo "$RUN_URL — see the first red step's log tail there. The runner is a fresh machine: a failure that does not reproduce locally is an environment assumption (PATH, GNU/BSD, missing dep) by definition."
+          echo
+          echo "## Proposal"
+          echo "Reproduce via the Repro below, fix the drifted assumption, keep the drill green — it is the machine-independent watchdog."
+          echo
+          echo "## Action"
+          echo "loop"
+          echo
+          echo "## Repro"
+          echo '```'
+          echo "# exactly what the workflow runs (see .github/workflows for the failing job):"
+          echo "shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh"
+          echo "bash tests/prompt-lint.sh"
+          echo "bash tests/run.sh"
+          echo "# + the hermetic floor drill: selfhost/fixture.sh + --check-nogo (exit 3 planted / 0 clean)"
+          echo '```'
+          echo
+          echo "## Verify"
+          echo '```'
+          echo "gh workflow run \"$WF\" && gh run watch   # rerun green; local gates green too"
+          echo '```'
+        } >"$body"
+        gh issue create -R "$GITHUB_REPOSITORY" \
+          --title "$MARKER $WF failed on a clean runner" \
+          --label loop-filed --label bug --label "action:loop" --label "component:ci" \
+          --body-file "$body"
+        echo "filed new issue"

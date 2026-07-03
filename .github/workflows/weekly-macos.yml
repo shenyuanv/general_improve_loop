@@ -1,0 +1,46 @@
+name: weekly-macos
+# Darwin coverage: production runs on macOS (launchd + /bin/bash 3.2), CI
+# runs ubuntu — this weekly job closes the gap on a clean mac runner,
+# deliberately using the SYSTEM bash for production parity. Failures file
+# themselves as loop issues.
+on:
+  schedule:
+    - cron: "47 18 * * 0"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  drills:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: deps (shellcheck + GNU timeout)
+        run: brew install shellcheck coreutils
+      - name: gates (system bash, production parity)
+        run: |
+          shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh
+          /bin/bash tests/prompt-lint.sh
+          /bin/bash tests/run.sh
+      - name: floor drill (hermetic fixture)
+        run: |
+          set -euo pipefail
+          FX="$(mktemp -d)"
+          CFG="$(/bin/bash selfhost/fixture.sh "$FX" --engine "$PWD" --bare-remote)"
+          BASE="$(git -C "$FX/proj" rev-parse HEAD)"
+          echo "ci tamper" >>"$FX/proj/ops/DIRECTION.md"
+          env HOME="$FX/home" GIT_CONFIG_NOSYSTEM=1 git -C "$FX/proj" add ops/DIRECTION.md
+          env HOME="$FX/home" GIT_CONFIG_NOSYSTEM=1 git -C "$FX/proj" commit -qm "ci: nogo tamper"
+          set +e
+          env HOME="$FX/home" GIT_CONFIG_NOSYSTEM=1 /bin/bash bin/run-loop.sh --check-nogo "$BASE" "$CFG"; rc=$?
+          set -e
+          [ "$rc" = 3 ] || { echo "planted violation NOT caught (rc=$rc, want 3)"; exit 1; }
+      - name: file issue on failure
+        if: ${{ failure() }}
+        uses: ./.github/actions/file-drill-issue
+        with:
+          marker: "[weekly-macos]"
+          workflow-name: "weekly-macos"

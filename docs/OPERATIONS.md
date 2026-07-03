@@ -63,6 +63,18 @@ hit quota windows and wait them out per the section above, promote + run
 a sprint must exit as a floor, a lint, or a documented duty (see DIRECTION
 standing orders).
 
+## CI as a floor and a finder
+
+Branch protection requires the `test` check on main: loop merges without
+`--admin` are SERVER-refused while CI is red or pending (the verifier is
+forbidden `--admin` by write-policy; you, the owner, may
+`gh pr merge --admin` as the documented escape hatch when CI itself is the
+thing that's broken). Two scheduled workflows drill a clean machine —
+`nightly-drills` (ubuntu, daily 02:17) and `weekly-macos` (Sun, system
+bash 3.2 parity) — and FILE a well-formed `component:ci` issue on failure
+(deduped by title marker). Silence from them means a clean machine agrees
+with yours.
+
 ## The loop's GitHub identity
 
 Pin it: `GH_AUTH_USER` in loop.config.sh makes every run resolve that

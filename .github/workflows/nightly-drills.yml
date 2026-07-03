@@ -1,0 +1,64 @@
+name: nightly-drills
+# CI as a FINDER: a clean ubuntu machine runs the gates and drills the
+# floors nightly (02:17 Asia/Taipei, before the 03:33 relay). On failure it
+# files ONE well-formed loop issue mechanically — no agent involved.
+on:
+  schedule:
+    - cron: "17 18 * * *"
+  workflow_dispatch:
+    inputs:
+      plant_failure:
+        description: "force a failure to test the issue-filing path"
+        default: "false"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  drills:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: plant failure (filing-path test only)
+        if: ${{ github.event.inputs.plant_failure == 'true' }}
+        run: |
+          echo "planted failure — testing the issue-filing path"
+          exit 1
+      - name: gates
+        run: |
+          shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh
+          bash tests/prompt-lint.sh
+          bash tests/run.sh
+      - name: floor drill (hermetic fixture — the no-go revert must bite)
+        run: |
+          set -euo pipefail
+          FX="$(mktemp -d)"
+          CFG="$(bash selfhost/fixture.sh "$FX" --engine "$PWD" --bare-remote)"
+          BASE="$(git -C "$FX/proj" rev-parse HEAD)"
+          echo "ci tamper" >>"$FX/proj/ops/DIRECTION.md"
+          env HOME="$FX/home" GIT_CONFIG_NOSYSTEM=1 git -C "$FX/proj" add ops/DIRECTION.md
+          env HOME="$FX/home" GIT_CONFIG_NOSYSTEM=1 git -C "$FX/proj" commit -qm "ci: nogo tamper"
+          set +e
+          env HOME="$FX/home" GIT_CONFIG_NOSYSTEM=1 bash bin/run-loop.sh --check-nogo "$BASE" "$CFG"; rc=$?
+          set -e
+          [ "$rc" = 3 ] || { echo "planted violation NOT caught (rc=$rc, want 3)"; exit 1; }
+          set +e
+          env HOME="$FX/home" GIT_CONFIG_NOSYSTEM=1 bash bin/run-loop.sh --check-nogo "$(git -C "$FX/proj" rev-parse HEAD)" "$CFG"; rc=$?
+          set -e
+          [ "$rc" = 0 ] || { echo "clean tree flagged (rc=$rc, want 0)"; exit 1; }
+      - name: install idempotence smoke
+        run: |
+          set -euo pipefail
+          T="$(mktemp -d)"
+          git -C "$T" init -q
+          git -C "$T" -c user.name=ci -c user.email=ci@example.invalid commit -q --allow-empty -m seed
+          ./install.sh "$T" >/dev/null
+          ./install.sh "$T" | grep -q "kept existing"
+      - name: file issue on failure
+        if: ${{ failure() }}
+        uses: ./.github/actions/file-drill-issue
+        with:
+          marker: "[nightly-drills]"
+          workflow-name: "nightly-drills"

@@ -13,7 +13,10 @@ Focus, no-go list, universal write rules.
 1. **Security/audit signals** — using the config's `TELEMETRY_DESC` access
    (read-only): auth failures, permission denials by reason, anomalous
    error rates in the last 24 h vs the trailing week. No telemetry
-   configured ⇒ say so in one line and skip.
+   configured ⇒ say so in one line and skip. Also the CI watchdogs:
+   latest `gh run list --workflow=nightly-drills -L 1` (and weekly-macos)
+   conclusion — red with NO matching open `component:ci` issue means the
+   mechanical filer itself failed: TOP finding.
 2. **Data-safety posture** — backups/exports exist and are fresh? recovery
    paths exercised recently (check the E2E ledgers for the last verified
    restore)? any "success" state that would actually be unrecoverable after
