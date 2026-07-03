@@ -29,9 +29,9 @@ and the analyst measures the trend nightly:
 ## Knobs
 
 ```yaml
-deploy: ack                 # ack | auto — promotion to the live checkout
-                            #   needs my approval until I've watched one
-                            #   staged bad deploy get caught + rolled back
+deploy: auto                # ack | auto — flipped 2026-07-03 after the staged
+                            #   bad-deploy drill (#8): verify-live caught the
+                            #   broken promote and rollback restored green
 push: push                  # dedicated repo; loops push loop-prefixed work
 fix_pipeline: on            # reproduced bugs flow issue → PR → verify+merge
 vm_cadence: daily           # the adoption journey runs nightly (stub agent, ~free)
