@@ -1,5 +1,35 @@
 # Harness audits (append-only; diff each entry against the previous)
 
+## Architecture addendum — 2026-07-03 night — CI participant + roles/
+
+**Track C (CI as participant).** Branch protection requires check `test`
+on main (repo made public after a clean secret sweep — owner decision;
+loop merges without `--admin` are server-refused, admin ops/ pushes bypass
+with notice, confirmed live on push). Two self-filing finder workflows:
+`nightly-drills` (ubuntu daily 02:17, gates + hermetic floor drill) and
+`weekly-macos` (Sun, system bash 3.2 parity) — filing + dedup proven live
+(#42 real catch of a workflow bug, #43 planted drill: filed once,
+commented on repeat). Guardian watches their conclusions.
+
+**Track R (role architecture).** `agents/` → `roles/{owner,manager,
+orchestrator,developer,tester,reviewer}/` via git mv; loop names and all
+state identifiers unchanged; wrapper/scheduler resolve `roles/*/<loop>.md`
+by glob; every role carries a CHARTER.md (mission/authority/workspace/
+KPIs); prompt-lint gained classes 10 (unique loop names) + 11 (charter
+present, role has a loop). NEW manager role (Saturdays 08:33,
+proposals-only): first supervised run scored the Focus bar, filed 🙋 #47
+(Focus #2 should measure scheduled_success_rate — quota noise isn't code
+failure) + design brief #48 (doc-contract lint; doc drift = modal defect,
+4/8 open), exercised restraint per charter, workspace within caps, $5.01,
+0 violations. Developer design lane wired knob-OFF (`develop_pipeline`,
+action:develop ⇒ Design+Budget+Verify, verifier lane-split). Orchestrator
+smoke on the new layout: contract-clean, 9 roles-path subagent
+resolutions, 0 stale paths — and it caught the owner's own stale issue
+body (#40 amended) plus fresh doc-drift (#45/#46).
+
+Tests 47→48 (t48 proves glob resolution on the newest role). Live engine
+`0cc1362`, 6 launchd jobs. Open for the owner: manager proposals #47/#48.
+
 ## Hardening addendum — 2026-07-03 evening — boundary closures + cycle 6
 
 Post-convergence plan executed (owner Track O + loop cycle 6). The four
