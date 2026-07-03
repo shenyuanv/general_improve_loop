@@ -1,292 +1,333 @@
 {
- "date": "2026-07-03",
- "run_id": "20260703-004533",
- "rerun_id": "20260703-012902",
- "rerun2_id": "20260703-090043",
- "rerun3_id": "20260703-094925",
- "mode": "NORMAL",
- "gates": {
-  "green": true,
-  "results": [
-   {
-    "cmd": "bash tests/run.sh",
-    "rc": 0,
-    "seconds": 44,
-    "collected": 44,
-    "passed": 44,
-    "failed": 0,
-    "xfail": 0,
-    "xpass": 0
-   },
-   {
-    "cmd": "bash tests/prompt-lint.sh",
-    "rc": 0,
-    "seconds": 0,
-    "violations": 0,
-    "warns": 0
-   },
-   {
-    "cmd": "shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh",
-    "rc": 0,
-    "seconds": 0
-   }
-  ],
-  "ci_main": "success",
-  "known_failures_pins": [],
-  "first_run_results": [
-   {
-    "cmd": "bash tests/run.sh",
-    "rc": 0,
-    "seconds": 31,
-    "collected": 35,
-    "passed": 33,
-    "failed": 0,
-    "xfail": 2,
-    "xpass": 0
-   },
-   {
-    "cmd": "bash tests/prompt-lint.sh",
-    "rc": 0,
-    "seconds": 0,
-    "violations": 0,
-    "warns": 1
-   },
-   {
-    "cmd": "shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh",
-    "rc": 0,
-    "seconds": 1
-   }
-  ],
-  "rerun1_results": [
-   {
-    "cmd": "bash tests/run.sh",
-    "rc": 0,
-    "seconds": 34,
-    "collected": 36,
-    "passed": 35,
-    "failed": 0,
-    "xfail": 1,
-    "xpass": 0
-   },
-   {
-    "cmd": "bash tests/prompt-lint.sh",
-    "rc": 0,
-    "seconds": 1,
-    "violations": 0,
-    "warns": 1
-   },
-   {
-    "cmd": "shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh",
-    "rc": 0,
-    "seconds": 0
-   }
-  ],
-  "rerun2_results": [
-   {
-    "cmd": "bash tests/run.sh",
-    "rc": 0,
-    "seconds": 36,
-    "collected": 38,
-    "passed": 37,
-    "failed": 0,
-    "xfail": 1,
-    "xpass": 0
-   },
-   {
-    "cmd": "bash tests/prompt-lint.sh",
-    "rc": 0,
-    "seconds": 1,
-    "violations": 0,
-    "warns": 1
-   },
-   {
-    "cmd": "shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh",
-    "rc": 0,
-    "seconds": 0
-   }
-  ],
-  "rerun3_results": [
-   {
-    "cmd": "bash tests/run.sh",
-    "rc": 0,
-    "seconds": 39,
-    "collected": 39,
-    "passed": 39,
-    "failed": 0,
-    "xfail": 0,
-    "xpass": 0
-   },
-   {
-    "cmd": "bash tests/prompt-lint.sh",
-    "rc": 0,
-    "seconds": 1,
-    "violations": 0,
-    "warns": 1
-   },
-   {
-    "cmd": "shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh",
-    "rc": 0,
-    "seconds": 0
-   }
-  ],
-  "rerun4_results": [
-   {
-    "cmd": "bash tests/run.sh",
-    "rc": 0,
-    "seconds": 42,
-    "collected": 42,
-    "passed": 42,
-    "failed": 0,
-    "xfail": 0,
-    "xpass": 0
-   },
-   {
-    "cmd": "bash tests/prompt-lint.sh",
-    "rc": 0,
-    "seconds": 1,
-    "violations": 0,
-    "warns": 1
-   },
-   {
-    "cmd": "shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh",
-    "rc": 0,
-    "seconds": 1
-   }
-  ]
- },
- "security": {
-  "auth_failures_24h": 0,
-  "gh_identity_pin": "active:shenyuanv(GH_TOKEN)",
-  "self_accept_strips_24h": 0,
-  "nogo_reverts_24h": 0,
-  "breaker_flags": 0
- },
- "data_safety": {
-  "promotes_24h": 7,
-  "rollbacks_24h": 1,
-  "rollback_drill_verified": true,
-  "deploys_ledger_backfilled_rows": 5,
-  "last_full_e2e_pass_engine": "6eb6b6a",
-  "live_engine": "d60d938",
-  "quota_429_run_kills_24h": 3,
-  "state_dir_backup": "none",
-  "repo_backup": "origin, current"
- },
- "deployed": {
-  "commit": "d60d9383401595f3eaa56392fd33537a694d572c",
-  "drift": "none (drift.sh exit 0)",
-  "mode": "auto (flipped from ack today at d60d938)",
-  "verify": "healthy (verify-live --quick)",
-  "attempts_tonight": 0,
-  "blocked": false,
-  "promotions_24h": 4,
-  "rollbacks_24h": 1,
-  "rollback_context": "staged drill for #8, deliberate"
- },
- "telemetry": {
-  "runs_24h": 21,
-  "results": {
-   "success": 17,
-   "error": 3,
-   "paused": 1
-  },
-  "success_rate_pct": 85,
-  "scheduled_relay_success_pct": 100,
-  "cost_usd_24h": 154.9,
-  "commits_24h": 28,
-  "timeouts": 0,
-  "nogo_reverts": 0,
-  "cost_by_loop_usd": {
-   "orchestrator": 62.72,
-   "fixer": 48.88,
-   "pr-verifier": 31.04,
-   "e2e-user": 12.26
-  },
-  "issues_closed_24h": 16,
-  "prs_merged_window": 13,
-  "median_hours_to_merge": 0.2,
-  "e2e_journeys": {
-   "rows": 2,
-   "PASS": 1,
-   "PARTIAL": 1
-  },
-  "loop_generated_accounts_excluded": 2
- },
- "trends": {
-  "pass_rate_14d": {
-   "rows": 2,
-   "PASS": 1,
-   "PARTIAL": 1,
-   "FAIL": 0,
-   "attempts": 3,
-   "unrecorded_infra_kills": 1,
-   "trend": "PARTIAL->PASS"
-  },
-  "latency_median_s": 57.5,
-  "latency_series_s": [
-   58,
-   57
-  ],
-  "days_since_journey": 0.33,
-  "days_since_sweep": null,
-  "cost_by_loop": {
-   "orchestrator": {
-    "full_pass_series_usd": [
-     8.69,
-     11.15,
-     16.69,
-     15.26,
-     10.51
+  "date": "2026-07-03",
+  "run_id": "20260703-004533",
+  "rerun_id": "20260703-012902",
+  "rerun2_id": "20260703-090043",
+  "rerun3_id": "20260703-094925",
+  "mode": "NORMAL",
+  "gates": {
+    "green": true,
+    "results": [
+      {
+        "cmd": "bash tests/run.sh",
+        "rc": 0,
+        "seconds": 48,
+        "collected": 48,
+        "passed": 48,
+        "failed": 0,
+        "xfail": 0,
+        "xpass": 0
+      },
+      {
+        "cmd": "bash tests/prompt-lint.sh",
+        "rc": 0,
+        "seconds": 0,
+        "violations": 0,
+        "warns": 0
+      },
+      {
+        "cmd": "shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh",
+        "rc": 0,
+        "seconds": 1
+      }
     ],
-    "latest_x_median": 0.94
-   },
-   "fixer": {
-    "latest_x_median": 1.0
-   },
-   "pr-verifier": {
-    "latest_x_median": 1.2
-   },
-   "e2e-user": {
-    "window_usd": 12.26
-   }
+    "ci_main": "success (ci workflow at 0cc1362; two nightly-drills reds were planted filing-path drills, filed+closed #42/#43)",
+    "known_failures_pins": [],
+    "first_run_results": [
+      {
+        "cmd": "bash tests/run.sh",
+        "rc": 0,
+        "seconds": 31,
+        "collected": 35,
+        "passed": 33,
+        "failed": 0,
+        "xfail": 2,
+        "xpass": 0
+      },
+      {
+        "cmd": "bash tests/prompt-lint.sh",
+        "rc": 0,
+        "seconds": 0,
+        "violations": 0,
+        "warns": 1
+      },
+      {
+        "cmd": "shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh",
+        "rc": 0,
+        "seconds": 1
+      }
+    ],
+    "rerun1_results": [
+      {
+        "cmd": "bash tests/run.sh",
+        "rc": 0,
+        "seconds": 34,
+        "collected": 36,
+        "passed": 35,
+        "failed": 0,
+        "xfail": 1,
+        "xpass": 0
+      },
+      {
+        "cmd": "bash tests/prompt-lint.sh",
+        "rc": 0,
+        "seconds": 1,
+        "violations": 0,
+        "warns": 1
+      },
+      {
+        "cmd": "shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh",
+        "rc": 0,
+        "seconds": 0
+      }
+    ],
+    "rerun2_results": [
+      {
+        "cmd": "bash tests/run.sh",
+        "rc": 0,
+        "seconds": 36,
+        "collected": 38,
+        "passed": 37,
+        "failed": 0,
+        "xfail": 1,
+        "xpass": 0
+      },
+      {
+        "cmd": "bash tests/prompt-lint.sh",
+        "rc": 0,
+        "seconds": 1,
+        "violations": 0,
+        "warns": 1
+      },
+      {
+        "cmd": "shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh",
+        "rc": 0,
+        "seconds": 0
+      }
+    ],
+    "rerun3_results": [
+      {
+        "cmd": "bash tests/run.sh",
+        "rc": 0,
+        "seconds": 39,
+        "collected": 39,
+        "passed": 39,
+        "failed": 0,
+        "xfail": 0,
+        "xpass": 0
+      },
+      {
+        "cmd": "bash tests/prompt-lint.sh",
+        "rc": 0,
+        "seconds": 1,
+        "violations": 0,
+        "warns": 1
+      },
+      {
+        "cmd": "shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh",
+        "rc": 0,
+        "seconds": 0
+      }
+    ],
+    "rerun4_results": [
+      {
+        "cmd": "bash tests/run.sh",
+        "rc": 0,
+        "seconds": 42,
+        "collected": 42,
+        "passed": 42,
+        "failed": 0,
+        "xfail": 0,
+        "xpass": 0
+      },
+      {
+        "cmd": "bash tests/prompt-lint.sh",
+        "rc": 0,
+        "seconds": 1,
+        "violations": 0,
+        "warns": 1
+      },
+      {
+        "cmd": "shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh",
+        "rc": 0,
+        "seconds": 1
+      }
+    ],
+    "rerun5_results": [
+      {
+        "cmd": "bash tests/run.sh",
+        "rc": 0,
+        "seconds": 44,
+        "collected": 44,
+        "passed": 44,
+        "failed": 0,
+        "xfail": 0,
+        "xpass": 0
+      },
+      {
+        "cmd": "bash tests/prompt-lint.sh",
+        "rc": 0,
+        "seconds": 0,
+        "violations": 0,
+        "warns": 0
+      },
+      {
+        "cmd": "shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh",
+        "rc": 0,
+        "seconds": 0
+      }
+    ]
   },
-  "diff_accounting": "4/4 new rows reconcile",
-  "quota_429_24h": 3
- },
- "repo": {
-  "loc_product": 2657,
-  "loc_tests": 1692,
-  "deps": 0,
-  "tests_collected": 44
- },
- "deltas_vs_yesterday": null,
- "deltas_vs_rerun2": {
-  "loc_product": 214,
-  "loc_tests": 34,
-  "tests_collected": 1,
-  "known_failures_pins": -1,
-  "open_issues": -1,
-  "promotions": 1,
-  "explanation": "loc +214 fully attributed: +125 ops artifacts (09:00 digest section, ledgers, metrics) + +89 engine/docs (owner port 8db3860 ~= +73, PRs #23/#24 ~= +16); pins 1->0 (t35 flipped by PR #23 - Focus #3 bar hit, collected 35->39 since baseline); issues #2/#3 closed by merged PRs #23/#24, #25 filed this run (11->10 open); owner promoted live to 8db3860 and accepted #15/#16/#21/#22 at 01:49Z"
- },
- "notes": "rerun5 17:00: first pass on deploy:auto (no drift, 0 attempts); #5/#8/#20 closed by owner; rollback drill verified in promotions.jsonl; deploys.jsonl backfilled 5 rows; filed #35 (digest-guarantee gap) #36 (funnel.sh doc drift); 3 quota-429 kills in 24h all off-schedule (#30 accepted, fixer tonight); prior-pass values preserved under first_run/rerunN keys",
- "rerun4_id": "20260703-130320",
- "deltas_vs_rerun3": {
-  "loc_product": -600,
-  "loc_tests": 107,
-  "tests_collected": 3,
-  "open_issues": -1,
-  "promotions": 1,
-  "explanation": "loc_product headline -600 = -627 from PR #27's ops/** exclusion landing + +27 real engine/doc/test growth (PRs #26/#27/#28); loc_tests +107 (t41/t42/t43); collected 39->42; issues: #15/#16/#21 closed by merged PRs #26/#27/#28, #29/#30 filed this run (10->9 open); owner promoted 95fee08 and accepted #6/#7/#25 at 02:35Z"
- },
- "rerun5_id": "20260703-165740",
- "deltas_vs_rerun4": {
-  "loc_product": 121,
-  "loc_tests": 114,
-  "deps": 0,
-  "tests_collected": 2,
-  "explained_by": "merged loop PRs #31/#32/#33 (fixes #6/#7/#22) + owner Track O 8f9c6ed (funnel.sh, SOPs, t45); under the 200 threshold",
-  "queue_open": "9->4 (#5 #8 #20 closed by owner; #6 #7 #22 fixed; +#34 owner-filed, +#35 #36 filed this run)",
-  "prompt_lint_warns": "1->0 (GIT_REMOTE knob deleted, #5 Option B)"
- }
+  "security": {
+    "auth_failures_24h": 0,
+    "gh_active_account_matches_pin": true,
+    "nogo_reverts_window": 0,
+    "self_accept_strips": 0,
+    "breaker_trips": 0,
+    "markers": {
+      "PAUSE": false,
+      "DEMOTED": false,
+      "BLOCKED": false
+    },
+    "ci_red_without_issue": 0,
+    "drill_filer": "proven (file+dedup+cleanup, #42/#43)"
+  },
+  "data_safety": {
+    "rollbacks_exercised_24h": 2,
+    "rollbacks_green": 2,
+    "last_verified_e2e_floors": "2026-07-03T01:23:19Z PASS",
+    "deploy_ledger_lag_events_before_backfill": 6,
+    "deploy_ledger_lag_events_after_backfill": 0,
+    "durable_copies": {
+      "code_queue_digests": "github",
+      "runs_promotions_jsonl": "single-machine"
+    }
+  },
+  "deployed": {
+    "live_commit": "0cc13621e3f1",
+    "main_commit": "0cc1362",
+    "drift": "current",
+    "knob": "auto",
+    "attempt_tonight": "none-needed",
+    "last_promotion": {
+      "ts": "2026-07-03T11:33:15Z",
+      "by": "owner-manual",
+      "to": "0cc1362"
+    },
+    "blocked_marker": false,
+    "promotions_24h": {
+      "promote": 14,
+      "first-promote": 1,
+      "rollback": 2
+    }
+  },
+  "telemetry": {
+    "window": "24h",
+    "runs": 24,
+    "results": {
+      "success": 20,
+      "error": 3,
+      "paused": 1
+    },
+    "by_loop": {
+      "orchestrator": 8,
+      "fixer": 7,
+      "pr-verifier": 6,
+      "e2e-user": 3
+    },
+    "cost_usd_24h": 189.54,
+    "commits_24h": 34,
+    "nogo_reverts": 0,
+    "timeouts": 0,
+    "issues_closed_24h": 20,
+    "prs_merged_24h": 16,
+    "median_hours_to_merge": 0.2,
+    "loop_generated_identities_excluded": 2,
+    "new_real_users_24h": "n/a"
+  },
+  "trends": {
+    "pass_rate_14d": {
+      "PASS": 1,
+      "PARTIAL": 1,
+      "FAIL": 0,
+      "rows": 2
+    },
+    "latency_median": 57.5,
+    "latency_latest": 57,
+    "latency_ratio": 0.99,
+    "days_since_journey": 0.43,
+    "tester_rows": 0,
+    "cost_by_loop": {
+      "orchestrator": {
+        "last": 12.00,
+        "median7": 11.15,
+        "ratio": 1.08
+      },
+      "fixer": {
+        "last": 13.87,
+        "median7": 10.06,
+        "ratio": 1.38
+      },
+      "pr-verifier": {
+        "last": 8.77,
+        "median7": 7.12,
+        "ratio": 1.23
+      },
+      "e2e-user": {
+        "last": 3.60,
+        "median7": 3.60,
+        "ratio": 1.0
+      }
+    },
+    "window_cost_total": 189.54,
+    "success_rate": 87,
+    "errors_all_quota429": true,
+    "diff_accounting_mismatches": 0
+  },
+  "repo": {
+    "loc_product": 3199,
+    "loc_tests": 1885,
+    "deps": 0,
+    "tests_collected": 48
+  },
+  "deltas_vs_yesterday": null,
+  "deltas_vs_rerun2": {
+    "loc_product": 214,
+    "loc_tests": 34,
+    "tests_collected": 1,
+    "known_failures_pins": -1,
+    "open_issues": -1,
+    "promotions": 1,
+    "explanation": "loc +214 fully attributed: +125 ops artifacts (09:00 digest section, ledgers, metrics) + +89 engine/docs (owner port 8db3860 ~= +73, PRs #23/#24 ~= +16); pins 1->0 (t35 flipped by PR #23 - Focus #3 bar hit, collected 35->39 since baseline); issues #2/#3 closed by merged PRs #23/#24, #25 filed this run (11->10 open); owner promoted live to 8db3860 and accepted #15/#16/#21/#22 at 01:49Z"
+  },
+  "notes": "rerun6 (19:34 local): gates green 48/48 xfail=0; t46-collision RED main from 17:31Z incident already repaired by owner (t47 rename) before this run; first deploy:auto night — live promoted current by owner 1 min before run, auto lane unexercised; deploys.jsonl backfilled 6 rows (incl. both L4-drill rollback legs); cost watch clean (all loops <2x median, none >$25)",
+  "rerun4_id": "20260703-130320",
+  "deltas_vs_rerun3": {
+    "loc_product": -600,
+    "loc_tests": 107,
+    "tests_collected": 3,
+    "open_issues": -1,
+    "promotions": 1,
+    "explanation": "loc_product headline -600 = -627 from PR #27's ops/** exclusion landing + +27 real engine/doc/test growth (PRs #26/#27/#28); loc_tests +107 (t41/t42/t43); collected 39->42; issues: #15/#16/#21 closed by merged PRs #26/#27/#28, #29/#30 filed this run (10->9 open); owner promoted 95fee08 and accepted #6/#7/#25 at 02:35Z"
+  },
+  "rerun5_id": "20260703-165740",
+  "deltas_vs_rerun4": {
+    "loc_product": 121,
+    "loc_tests": 114,
+    "deps": 0,
+    "tests_collected": 2,
+    "explained_by": "merged loop PRs #31/#32/#33 (fixes #6/#7/#22) + owner Track O 8f9c6ed (funnel.sh, SOPs, t45); under the 200 threshold",
+    "queue_open": "9->4 (#5 #8 #20 closed by owner; #6 #7 #22 fixed; +#34 owner-filed, +#35 #36 filed this run)",
+    "prompt_lint_warns": "1->0 (GIT_REMOTE knob deleted, #5 Option B)"
+  },
+  "rerun6_id": "20260703-193430",
+  "deltas_vs_rerun5": {
+    "loc_product": 542,
+    "loc_tests": 193,
+    "deps": 0,
+    "tests_collected": 4,
+    "explained_by": "owner Track C af71a2f (+191 product) + Track R 0cc1362 (+284 product/+62 tests) + CI fix ec48cdb + merged loop PRs #38/#39 + t46->t47 repair; over the 200/day line but fully attributed to owner tracks + merged PRs",
+    "queue_open": "5->8 (+#44 #45 #46 loop-filed this run; #40 #41 owner-filed post-mortems earlier today; all 8 cooling until 07-04)",
+    "prompt_lint_warns": "0->0"
+  }
 }
