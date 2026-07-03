@@ -153,7 +153,7 @@ KEEPAWAKE=(env); [[ "$(uname)" == "Darwin" ]] && KEEPAWAKE=(/usr/bin/caffeinate 
 AGENT_PROMPT_FILE="$ILOOP_ROOT/agents/$LOOP/AGENT.md"
 [[ -f "$AGENT_PROMPT_FILE" ]] || { log "no agent prompt at $AGENT_PROMPT_FILE"; RC=1; record_run error; exit 1; }
 DIGEST="$PROJECT_DIR/ops/reports/$(date +%F).md"
-DIGEST_PRE_LINES=$(wc -l <"$DIGEST" 2>/dev/null || echo 0)
+DIGEST_PRE_LINES=$(wc -l 2>/dev/null <"$DIGEST" || echo 0)
 HEAD_BEFORE=$(git -C "$PROJECT_DIR" rev-parse HEAD)
 cd "$PROJECT_DIR" || { RC=1; record_run error; exit 1; }
 log "invoking $RUNNER_BIN for $LOOP (timeout ${TIMEOUT_S}s)"
