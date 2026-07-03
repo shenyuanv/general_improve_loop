@@ -31,8 +31,13 @@ PR number, the config path, the NOGO_PATHS list.
 Each subagent returns `{pr, verdict: PASS|FAIL|CI_PENDING, evidence}`:
 - PASS ⇒ merge oldest-first (`--squash --delete-branch`; the squash message
   keeps `Fixes #<n>` so the issue auto-closes). After each merge, a later
-  PASS whose mergeability went stale gets downgraded to FAIL with
-  "rebase needed" evidence — never force it.
+  PASS whose mergeability went stale is NEVER force-merged: close it
+  instead — `gh pr close <n> --delete-branch --comment <evidence>` stating
+  it passed on content but conflicted with the just-merged PR, and that the
+  branch is deleted so the next fixer run re-fixes the issue fresh on new
+  main (its no-open-PR / no-branch rules make it eligible again
+  automatically). Do NOT label it `changes-requested` — nothing is wrong
+  with the issue, only the race.
 - FAIL ⇒ ONE comment with the verbatim evidence per failed check and what
   would make it pass; add `changes-requested`. A PR that has now failed
   twice ⇒ recommend closing in your report (the human decides).

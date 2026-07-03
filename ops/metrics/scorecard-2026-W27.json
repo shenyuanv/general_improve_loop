@@ -1,53 +1,54 @@
 {
-  "ts": "2026-07-03T05:09:18Z",
+  "ts": "2026-07-03T07:28:02Z",
   "week": "2026-W27",
   "window_days": 14,
   "project": "general_improve_loop",
   "runs": {
-    "window_runs": 17,
-    "success_rate": 82,
+    "window_runs": 21,
+    "success_rate": 85,
+    "scheduled_success_rate": null,
     "results": {
-      "error": 2,
+      "error": 3,
       "paused": 1,
-      "success": 14
+      "success": 17
     },
-    "cost_total_usd": 123.29,
+    "cost_total_usd": 154.9,
     "nogo_reverts": 0,
     "timeouts": 0,
     "by_loop": {
       "e2e-user": {
-        "runs": 2,
+        "runs": 3,
         "ok": 2,
-        "cost_usd": 8.66
+        "cost_usd": 12.26
       },
       "fixer": {
-        "runs": 5,
-        "ok": 4,
-        "cost_usd": 38.82
+        "runs": 6,
+        "ok": 5,
+        "cost_usd": 48.88
       },
       "orchestrator": {
-        "runs": 6,
-        "ok": 4,
-        "cost_usd": 52.21
+        "runs": 7,
+        "ok": 5,
+        "cost_usd": 62.72
       },
       "pr-verifier": {
-        "runs": 4,
-        "ok": 4,
-        "cost_usd": 23.6
+        "runs": 5,
+        "ok": 5,
+        "cost_usd": 31.04
       }
     }
   },
   "funnel": {
     "open": {
-      "loop_filed": 4,
-      "accepted": 4,
-      "action_loop": 4,
+      "loop_filed": 5,
+      "accepted": 1,
+      "action_loop": 3,
       "decisions": 2,
-      "bugs": 4,
+      "bugs": 3,
       "loop_prs": 0
     },
     "merged_window": {
-      "count": 10,
+      "count": 13,
       "median_hours_to_merge": 0.2
     },
     "prs_awaiting_rework": 0
@@ -64,10 +65,10 @@
   },
   "tester_latest": null,
   "ratchet": {
-    "loc_product": 2536,
-    "loc_tests": 1578,
+    "loc_product": 2554,
+    "loc_tests": 1634,
     "deps": 0,
-    "tests_collected": 42
+    "tests_collected": 43
   },
   "markers": {
     "paused": false,

@@ -42,6 +42,36 @@
 - `ops/ledger/*.jsonl` — journeys, deploys, tester sweeps.
 - Digest claims vs runs.jsonl diff accounting = your tamper check.
 
+## Runner quota (429s are weather, not breakage)
+
+Subscription runners share your own usage windows (5-hour and 7-day). A run
+killed by quota is recorded honestly and nothing advances — the nightly
+cadence self-heals by simply running tomorrow. Do NOT rm breakers or retry
+in a tight loop. To resume sooner: probe cheaply
+(`claude -p "Reply with exactly: OK"`), and rerun the missed loop only
+after the probe answers OK. The reset timestamps are in the run's log
+(`rate_limit_info.resetsAt`).
+
+## Sprint mode (supervised convergence runs)
+
+Running the relay back-to-back (as in bootstrap) is the exception, not the
+design. If you do: batch-`accepted` the issues you want fixed (acceptance
+bypasses cooling — that authorization is the point of the label), expect to
+hit quota windows and wait them out per the section above, promote + run
+`selfhost/verify-live.sh` between cycles, and revert any knob you raised
+(caps, cadence) when the sprint ends. Every manual step you perform during
+a sprint must exit as a floor, a lint, or a documented duty (see DIRECTION
+standing orders).
+
+## The loop's GitHub identity
+
+Pin it: `GH_AUTH_USER` in loop.config.sh makes every run resolve that
+user's token up front, so an interactive `gh auth switch` on the same
+machine can never flip a live run (the cycle-2 incident). Drill after
+changing it: switch your shell to another account, run
+`bin/run-loop.sh --check-queue-lint <iso> <config>` — it must still see
+the queue — then switch back.
+
 ## Monthly
 
 Re-run the audit (docs/AUDIT-CHECKLIST.md) and diff the scorecard + metrics

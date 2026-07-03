@@ -9,7 +9,9 @@ ILOOP_ROOT="$HOME/.improve-loop/general_improve_loop/live"  # the PROMOTED engin
 PROJECT_DIR="$HOME/sourcecode/general_improve_loop"         # the repo under improvement
 PROJECT_NAME="general_improve_loop"
 GH_REPO="shenyuanv/general_improve_loop"
-GIT_REMOTE="origin"
+GH_AUTH_USER="shenyuanv"   # pin the loop's gh identity (decision #20): token
+                           # resolved at run start; interactive `gh auth
+                           # switch` can no longer flip a live run
 
 # ── State (outside the repo) ─────────────────────────────────────────────
 STATE_DIR="$HOME/.improve-loop/$PROJECT_NAME"

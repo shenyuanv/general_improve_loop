@@ -24,7 +24,7 @@ done
 t_assert_not_contains "$T_CAP/check.err" "queue lint: #5"
 
 # Only the well-formed issue in the queue ⇒ clean pass
-rm "$T_GH/issue-numbers"
+rm "$T_GH/issue-meta.jsonl"
 t_gh_issue 5 "loop-filed,action:loop,component:cli,bug" "$good_body"
 t_run_check --check-queue-lint "2026-01-01T00:00:00Z"
 t_assert_rc 0

@@ -108,13 +108,26 @@ t_seed_runs() { # <loop> <result>… — append minimal runs.jsonl rows
   done
 }
 
-t_gh_issue() { # <number> <labels-csv> [body] — register an open loop-filed issue
+t_gh_issue() { # <number> <labels-csv> [body] [createdAt] — register an open issue
   local n="$1" labels="$2" body="${3:-$'## Found\nseeded\n## Repro\nbash src/app.sh x'}"
+  local created="${4:-2026-01-01T00:00:00Z}"
   jq -n --arg labels "$labels" --arg body "$body" \
     '{labels: ($labels | split(",") | map(select(length>0)) | map({name:.})), body: $body}' \
     >"$T_GH/issues/$n.json"
-  echo "$n" >>"$T_GH/issue-numbers"
-  jq -nR '[inputs | {number: tonumber}]' <"$T_GH/issue-numbers" >"$T_GH/issue-list.json"
+  jq -cn --argjson n "$n" --arg labels "$labels" --arg body "$body" --arg created "$created" \
+    '{number: $n, title: "issue \($n)", createdAt: $created, body: $body,
+      labels: ($labels | split(",") | map(select(length>0)) | map({name:.}))}' \
+    >>"$T_GH/issue-meta.jsonl"
+  jq -s '.' "$T_GH/issue-meta.jsonl" >"$T_GH/issue-list.json"
+}
+
+t_gh_pr() { # <number> <labels-csv> [createdAt] — register an open PR
+  local n="$1" labels="$2" created="${3:-2026-01-01T00:00:00Z}"
+  jq -cn --argjson n "$n" --arg labels "$labels" --arg created "$created" \
+    '{number: $n, title: "pr \($n)", createdAt: $created,
+      labels: ($labels | split(",") | map(select(length>0)) | map({name:.}))}' \
+    >>"$T_GH/pr-meta.jsonl"
+  jq -s '.' "$T_GH/pr-meta.jsonl" >"$T_GH/pr-list.json"
 }
 
 t_gh_events() { # events.json from stdin

@@ -11,7 +11,7 @@ incident (DEMOTED).
 | E2E loops (user, tester) | ops/ paths only (ledger + report section), `loop(<name>):` prefix | `gh issue create` only |
 | Fixer **dispatcher** | ops/ paths only | none |
 | Fixer **fix subagent** (one per issue) | its ONE branch `loop/fix-GH<n>` in its own worktree; never main | its ONE `gh pr create` (label `loop-pr`, body `Fixes #<n>`) |
-| Verifier **dispatcher** | ops/ paths only; `git pull --ff-only` after merges | on `loop-pr` PRs ONLY: `gh pr merge --squash --delete-branch` on PASS; `gh pr comment` (verbatim evidence) + `changes-requested` label on FAIL |
+| Verifier **dispatcher** | ops/ paths only; `git pull --ff-only` after merges | on `loop-pr` PRs ONLY: `gh pr merge --squash --delete-branch` on PASS; `gh pr comment` (verbatim evidence) + `changes-requested` label on FAIL; `gh pr close --delete-branch` (evidence comment, no label) on a stale-PASS merge conflict — re-arms the fixer for a fresh fix |
 | Verifier **verify subagent** (one per PR) | none (worktree read/build/test only) | none |
 
 Universal rules, every lane:

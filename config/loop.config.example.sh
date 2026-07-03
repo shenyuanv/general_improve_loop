@@ -14,7 +14,6 @@ GH_REPO="your-org/your-repo"                        # gh issue/pr target
 # the active gh account flipping to one that cannot see GH_REPO (the wrapper
 # floors then fail open on silently-empty lists). Empty = gh's active account.
 GH_AUTH_USER=""
-GIT_REMOTE="origin"                                 # remote the loops push to
 
 # ── State (outside the repo) ─────────────────────────────────────────────
 STATE_DIR="$HOME/.improve-loop/$PROJECT_NAME"       # logs, locks, runs.jsonl, breaker flags

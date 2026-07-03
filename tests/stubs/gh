@@ -46,7 +46,7 @@ case "${1:-} ${2:-}" in
     done
     f="$FIX/prs/${head_ref//\//__}.json"   # branch slashes → __ in fixture name
     if [[ -n "$head_ref" && -f "$f" ]]; then emit "$(cat "$f")"; exit 0; fi
-    emit "[]"; exit 0 ;;
+    emit "$(cat "$FIX/pr-list.json" 2>/dev/null || echo '[]')"; exit 0 ;;
   "pr create")    mut "$*"; echo "https://github.com/stub-owner/stub-repo/pull/999"; exit 0 ;;
   "pr merge"|"pr comment"|"pr edit") mut "$*"; exit 0 ;;
   "pr checks")    echo "all checks passing"; exit 0 ;;

@@ -32,9 +32,13 @@ report the excluded count. New real users in 24 h ⇒ good-news NOTIFY line.
 
 ## 3. Queue funnel (always)
 
-Build the MANDATORY funnel table per contracts/queue-state-machine.md:
-every open issue → state → next actor → next action time; ORPHANS (no
-matching state) are a 🟡 finding. Also: new-in-24h issues WITHOUT
+Generate the MANDATORY funnel table mechanically: run
+`bash "$ILOOP_ROOT/bin/funnel.sh" "$ILOOP_CONFIG"` and paste its output
+into your DIGEST section, annotating rows where you have context — never
+hand-compute the rows (scripts do arithmetic, your tokens do judgment; if
+the script errors, say so and fall back to manual per
+contracts/queue-state-machine.md). ORPHANS in its summary line are a 🟡
+finding. Also: new-in-24h issues WITHOUT
 `loop-filed` (user reports ⇒ NOTIFY line) · closed-in-24h one-line traces ·
 open `loop-pr` PRs + ages. For every OPEN `🙋` issue run
 `gh issue view <n> --comments`: a new owner reply choosing an option IS the

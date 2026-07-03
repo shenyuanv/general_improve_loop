@@ -53,8 +53,13 @@ notify_on: [failure, deploy, rollback, incident, pending-ack, new-user, decision
 - When in doubt, do less and write it up.
 - The engine you execute is the LIVE checkout; the repo you improve is
   this one. Never run loops from the working tree you are editing.
-- A fix PR for a bug pinned in tests/known-failures.txt MUST remove that
-  test's line in the same PR — the suite fails on XPASS otherwise, and the
-  verifier treats a leftover line as an incomplete fix.
+- A fix PR for a pinned bug MUST flip its known-failures entry in the same
+  PR (today the line in tests/known-failures.txt; the marker file under
+  tests/known-failures.d/ once that lands) — the suite fails on XPASS
+  otherwise, and the verifier treats a leftover pin as an incomplete fix.
 - Feature work never enters the automated lane; file it
   `action:interactive` and wait for me.
+- Any manual owner intervention a cycle needed MUST exit the run as one of:
+  a mechanical floor, a lint/test, or a documented operator duty — never
+  tribal knowledge. If you observe me intervening by hand, file the issue
+  that mechanizes it.
