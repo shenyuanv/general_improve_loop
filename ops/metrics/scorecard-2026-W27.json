@@ -1,5 +1,5 @@
 {
-  "ts": "2026-07-03T07:28:02Z",
+  "ts": "2026-07-03T09:03:10Z",
   "week": "2026-W27",
   "window_days": 14,
   "project": "general_improve_loop",
@@ -40,11 +40,11 @@
   },
   "funnel": {
     "open": {
-      "loop_filed": 5,
-      "accepted": 1,
-      "action_loop": 3,
-      "decisions": 2,
-      "bugs": 3,
+      "loop_filed": 3,
+      "accepted": 3,
+      "action_loop": 4,
+      "decisions": 0,
+      "bugs": 4,
       "loop_prs": 0
     },
     "merged_window": {
@@ -65,10 +65,10 @@
   },
   "tester_latest": null,
   "ratchet": {
-    "loc_product": 2554,
-    "loc_tests": 1634,
+    "loc_product": 2657,
+    "loc_tests": 1692,
     "deps": 0,
-    "tests_collected": 43
+    "tests_collected": 44
   },
   "markers": {
     "paused": false,
