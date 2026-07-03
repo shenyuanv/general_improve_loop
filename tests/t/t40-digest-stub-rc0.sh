@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# T37 — digest guarantee, healthy run: if the orchestrator exits 0 but
+# T40 — digest guarantee, healthy run: if the orchestrator exits 0 but
 # writes no digest, the wrapper stub must NOT claim FAILED/🔴 (issue #11).
 source "$(dirname "$0")/../lib.sh"
 t_setup
