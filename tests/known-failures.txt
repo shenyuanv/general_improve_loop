@@ -1,3 +1,2 @@
 # Tests pinning KNOWN, issue-tracked bugs (xfail). Fixing the bug requires
 # removing its line here — that flip is the fail-before/pass-after evidence.
-t35-notify-quote-crush

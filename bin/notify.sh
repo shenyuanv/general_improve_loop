@@ -15,7 +15,13 @@ fi
 
 case "$method" in
   osascript)
-    osascript -e "display notification \"${MSG//\"/'}\" with title \"${TITLE//\"/'}\" sound name \"Submarine\"" 2>/dev/null ;;
+    # Crush double quotes to single quotes in plain assignments BEFORE the
+    # format string: an inline ${VAR//\"/'} mis-pairs its quote with the
+    # next expansion's on modern bash (garbled output), and a stray \" can
+    # terminate the AppleScript string context (injection surface).
+    sq="'"
+    msg_safe="${MSG//\"/$sq}"; title_safe="${TITLE//\"/$sq}"
+    osascript -e "display notification \"$msg_safe\" with title \"$title_safe\" sound name \"Submarine\"" 2>/dev/null ;;
   notify-send)
     notify-send "$TITLE" "$MSG" 2>/dev/null ;;
   webhook)
