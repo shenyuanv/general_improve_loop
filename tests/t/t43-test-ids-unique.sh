@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # T43 — one-id-per-test convention: every tests/t/tNN-*.sh numeric prefix
 # is unique, so substring filters (`bash tests/run.sh t07`) and
-# tests/known-failures.txt pin lines stay unambiguous. Guards against
+# tests/known-failures.d/ marker names stay unambiguous. Guards against
 # parallel PRs each taking the same next free number (issue #21: PRs #18
 # and #19 both added a t37-*.sh the same night).
 set -uo pipefail
