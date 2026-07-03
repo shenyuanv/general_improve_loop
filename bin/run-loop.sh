@@ -181,6 +181,7 @@ if [[ "$LAST3" =~ ^(error|timeout),(error|timeout),(error|timeout)$ ]]; then
   record_run breaker; exit 1
 fi
 find "$LOG_DIR" -name '*.log' -mtime +14 -delete 2>/dev/null
+find "$STATE_DIR/evidence" -mindepth 1 -maxdepth 1 -mtime +30 -exec rm -rf {} + 2>/dev/null
 if [[ -f "$STATE_DIR/runs.jsonl" ]] && (( $(wc -l <"$STATE_DIR/runs.jsonl") > 500 )); then
   tail -500 "$STATE_DIR/runs.jsonl" >"$STATE_DIR/runs.jsonl.tmp" && mv "$STATE_DIR/runs.jsonl.tmp" "$STATE_DIR/runs.jsonl"
 fi

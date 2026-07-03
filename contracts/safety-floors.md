@@ -21,7 +21,7 @@ the floors are the last.
 | Stale loop-branch prune — post-run, a local `loop/fix-GH<n>` branch whose newest PR is MERGED/CLOSED is deleted (loop-prefixed refs only; open/unknown PR state ⇒ kept, never human branches) | a merged/closed loop PR's leftover branch making the fixer skip issue #n forever ("branch exists" = ineligible) |
 | Diff accounting (commits/±lines per run into runs.jsonl) | invisible scope creep; digest claims that don't match reality |
 | Digest guarantee (stub on crash) + per-run NOTIFY fan-out (only lines this run appended; max 3) | silent failures; duplicate/starved notifications across same-day runs |
-| Retention caps (logs 14 d, runs.jsonl 500 rows) | unbounded state degrading future runs |
+| Retention caps (logs 14 d, runs.jsonl 500 rows, `$STATE_DIR/evidence` entries 30 d) | unbounded state degrading future runs |
 
 ## Behavioral (prompt-enforced, audited by the floors' evidence)
 
