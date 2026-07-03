@@ -91,7 +91,9 @@ loc_of() { # paths… (tracked files only; always prints a number)
     | (cd "$PROJECT_DIR" && xargs wc -l 2>/dev/null) | awk '{s=$1} END{print s+0}'
 }
 LOC_TESTS="$(loc_of 'tests/**' 'test/**' '*_test*')"; LOC_TESTS="${LOC_TESTS:-0}"
-LOC_ALL="$(loc_of '.')"; LOC_ALL="${LOC_ALL:-0}"
+# ops/** is the loop's own nightly output (digests, metrics, ledgers) — it is
+# excluded so the LOC ratchet measures product code, not loop artifacts (#16).
+LOC_ALL="$(loc_of '.' ':!ops/**')"; LOC_ALL="${LOC_ALL:-0}"
 LOC_PRODUCT=$(( LOC_ALL - LOC_TESTS ))
 DEPS=0
 [[ -f "$PROJECT_DIR/package.json" ]] && DEPS=$(( DEPS + $(jq '(.dependencies // {}) + (.devDependencies // {}) | length' "$PROJECT_DIR/package.json" 2>/dev/null || echo 0) ))
