@@ -17,8 +17,8 @@ sched >"$T_CAP/sched.out"
 
 cron="$T_CAP/crontab.current"
 t_assert_contains "$cron" "/usr/bin/existing-user-job"
-t_assert_contains "$cron" "33 3 * * * LOOP_TIMEOUT_S=6000 /bin/bash $T_REPO/bin/run-loop.sh orchestrator $T_CFG # improve-loop:fixture"
-t_assert_contains "$cron" "33 5 * * 0 LOOP_TIMEOUT_S=5400 /bin/bash $T_REPO/bin/run-loop.sh e2e-tester $T_CFG # improve-loop:fixture"
+t_assert_contains "$cron" "33 3 * * * LOOP_TIMEOUT_S=6000 /bin/bash $T_REPO/bin/run-loop.sh --scheduled orchestrator $T_CFG # improve-loop:fixture"
+t_assert_contains "$cron" "33 5 * * 0 LOOP_TIMEOUT_S=5400 /bin/bash $T_REPO/bin/run-loop.sh --scheduled e2e-tester $T_CFG # improve-loop:fixture"
 t_assert_not_contains "$cron" "bogus-loop"
 t_assert_contains "$T_CAP/sched.out" "SKIP bogus-loop"
 

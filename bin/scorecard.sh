@@ -28,10 +28,19 @@ RUNS_JSON="null"
 if [[ -f "$STATE_DIR/runs.jsonl" ]]; then
   RUNS_JSON="$(jq -nR --arg cutoff "$CUTOFF" '
     [inputs | (fromjson? // empty) | select((.started // "") >= $cutoff)]
+    # "paused" rows are intentional (ops/PAUSE drills / owner pauses), not
+    # relay failures — they stay in window_runs/results but leave every
+    # success-rate denominator (#22). scheduled_success_rate scores only
+    # rows the scheduler launched (trigger:"scheduled"; older rows have no
+    # trigger field and ad-hoc owner runs record "manual").
+    | ([.[] | select(.result != "paused")]) as $graded
+    | ([$graded[] | select(.trigger == "scheduled")]) as $sched
     | {
         window_runs: length,
-        success_rate: (if length == 0 then null else
-          (([.[] | select(.result == "success")] | length) / length * 100 | round) end),
+        success_rate: (if ($graded | length) == 0 then null else
+          (([$graded[] | select(.result == "success")] | length) / ($graded | length) * 100 | round) end),
+        scheduled_success_rate: (if ($sched | length) == 0 then null else
+          (([$sched[] | select(.result == "success")] | length) / ($sched | length) * 100 | round) end),
         results: (group_by(.result) | map({key: .[0].result, value: length}) | from_entries),
         cost_total_usd: ([.[] | .cost_usd // 0] | add // 0 | . * 100 | round / 100),
         nogo_reverts: ([.[] | .nogo_reverts // 0] | add // 0),
@@ -132,6 +141,7 @@ jq -r '
   def cell(v): if v == null then "–" else (v | tostring) end;
   "| runs (\(.window_days)d) | \(cell(.runs.window_runs)) |",
   "| run success % | \(cell(.runs.success_rate)) |",
+  "| scheduled run success % | \(cell(.runs.scheduled_success_rate)) |",
   "| cost (window) | $\(cell(.runs.cost_total_usd)) |",
   "| nogo reverts | \(cell(.runs.nogo_reverts)) |",
   "| open: filed/accepted/decisions | \(cell(.funnel.open.loop_filed))/\(cell(.funnel.open.accepted))/\(cell(.funnel.open.decisions)) |",
