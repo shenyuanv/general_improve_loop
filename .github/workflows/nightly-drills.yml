@@ -22,16 +22,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: plant failure (filing-path test only)
+        id: plant
         if: ${{ github.event.inputs.plant_failure == 'true' }}
         run: |
           echo "planted failure — testing the issue-filing path"
           exit 1
       - name: gates
+        id: gates
         run: |
           shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh
           bash tests/prompt-lint.sh
           bash tests/run.sh
       - name: floor drill (hermetic fixture — the no-go revert must bite)
+        id: drill
         run: |
           set -euo pipefail
           FX="$(mktemp -d)"
@@ -49,6 +52,7 @@ jobs:
           set -e
           [ "$rc" = 0 ] || { echo "clean tree flagged (rc=$rc, want 0)"; exit 1; }
       - name: install idempotence smoke
+        id: smoke
         run: |
           set -euo pipefail
           T="$(mktemp -d)"
@@ -57,9 +61,21 @@ jobs:
           ./install.sh "$T" >/dev/null
           out="$(./install.sh "$T")"           # capture, don't pipe (grep -q would SIGPIPE the script)
           grep -q "kept existing" <<<"$out"
+      - name: classify failure lane
+        id: classify
+        if: ${{ failure() }}
+        run: |
+          # repo-code steps → the fixer can act; anything else is workflow/runner plumbing → owner
+          if [ "${{ steps.gates.outcome }}" = "failure" ]; then echo "step=gates" >>"$GITHUB_OUTPUT"; echo "lane=loop" >>"$GITHUB_OUTPUT";
+          elif [ "${{ steps.drill.outcome }}" = "failure" ]; then echo "step=floor drill" >>"$GITHUB_OUTPUT"; echo "lane=loop" >>"$GITHUB_OUTPUT";
+          elif [ "${{ steps.smoke.outcome }}" = "failure" ]; then echo "step=install smoke" >>"$GITHUB_OUTPUT"; echo "lane=loop" >>"$GITHUB_OUTPUT";
+          elif [ "${{ steps.plant.outcome }}" = "failure" ]; then echo "step=planted (drill)" >>"$GITHUB_OUTPUT"; echo "lane=operator" >>"$GITHUB_OUTPUT";
+          else echo "step=workflow plumbing" >>"$GITHUB_OUTPUT"; echo "lane=operator" >>"$GITHUB_OUTPUT"; fi
       - name: file issue on failure
         if: ${{ failure() }}
         uses: ./.github/actions/file-drill-issue
         with:
           marker: "[nightly-drills]"
           workflow-name: "nightly-drills"
+          lane: ${{ steps.classify.outputs.lane }}
+          failed-step: ${{ steps.classify.outputs.step }}

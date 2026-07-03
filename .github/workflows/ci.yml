@@ -2,7 +2,13 @@ name: ci
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "ops/**"        # loop digest/ledger commits carry no engine code
   pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:

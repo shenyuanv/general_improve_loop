@@ -65,6 +65,17 @@ standing orders).
 
 ## CI as a floor and a finder
 
+**CI health ownership (no dedicated CI role — by design):** the *guardian*
+watches every workflow conclusion nightly (red with no matching
+`component:ci` issue = the filer itself broke, TOP finding); failures in
+repo code (gates/floor drill/install smoke) self-file as `action:loop` and
+the *developer* fixes them like any bug; failures in workflow/runner
+plumbing self-file as `action:operator` because `.github/` is the *owner's*
+rails — no loop may touch merge-gate or watchdog definitions (a loop that
+can edit its own CI can green-wash itself). The *tester* deliberately does
+NOT own CI: its charter is finding product defects, and the drill
+workflows are its instruments, not its service to operate.
+
 Branch protection requires the `test` check on main: loop merges without
 `--admin` are SERVER-refused while CI is red or pending (the verifier is
 forbidden `--admin` by write-policy; you, the owner, may

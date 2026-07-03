@@ -11,6 +11,14 @@ inputs:
   workflow-name:
     description: "human name of the failing workflow"
     required: true
+  lane:
+    description: "loop (repo code broke — fixer can act) | operator (workflow/runner plumbing — owner rails)"
+    required: false
+    default: "loop"
+  failed-step:
+    description: "name of the first failed step (from the classify step)"
+    required: false
+    default: "unknown"
 runs:
   using: composite
   steps:
@@ -19,6 +27,8 @@ runs:
         GH_TOKEN: ${{ github.token }}
         MARKER: ${{ inputs.marker }}
         WF: ${{ inputs.workflow-name }}
+        LANE: ${{ inputs.lane }}
+        STEP: ${{ inputs.failed-step }}
         RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
       run: |
         set -uo pipefail
@@ -42,7 +52,11 @@ runs:
           echo "Reproduce via the Repro below, fix the drifted assumption, keep the drill green — it is the machine-independent watchdog."
           echo
           echo "## Action"
-          echo "loop"
+          if [ "$LANE" = "operator" ]; then
+            echo "operator: the failing step (\`$STEP\`) is workflow/runner plumbing — the fix lives in .github/ (owner rails, NOGO for loops). Inspect the run, patch the workflow, re-dispatch: gh workflow run \"$WF\""
+          else
+            echo "loop"
+          fi
           echo
           echo "## Repro"
           echo '```'
@@ -59,7 +73,7 @@ runs:
           echo '```'
         } >"$body"
         gh issue create -R "$GITHUB_REPOSITORY" \
-          --title "$MARKER $WF failed on a clean runner" \
-          --label loop-filed --label bug --label "action:loop" --label "component:ci" \
+          --title "$MARKER $WF failed on a clean runner (step: $STEP)" \
+          --label loop-filed --label bug --label "action:$LANE" --label "component:ci" \
           --body-file "$body"
         echo "filed new issue"

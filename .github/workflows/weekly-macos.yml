@@ -19,13 +19,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: deps (shellcheck + GNU timeout)
+        id: deps
         run: brew install shellcheck coreutils
       - name: gates (system bash, production parity)
+        id: gates
         run: |
           shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh
           /bin/bash tests/prompt-lint.sh
           /bin/bash tests/run.sh
       - name: floor drill (hermetic fixture)
+        id: drill
         run: |
           set -euo pipefail
           FX="$(mktemp -d)"
@@ -38,9 +41,19 @@ jobs:
           env HOME="$FX/home" GIT_CONFIG_NOSYSTEM=1 /bin/bash bin/run-loop.sh --check-nogo "$BASE" "$CFG"; rc=$?
           set -e
           [ "$rc" = 3 ] || { echo "planted violation NOT caught (rc=$rc, want 3)"; exit 1; }
+      - name: classify failure lane
+        id: classify
+        if: ${{ failure() }}
+        run: |
+          if [ "${{ steps.gates.outcome }}" = "failure" ]; then echo "step=gates" >>"$GITHUB_OUTPUT"; echo "lane=loop" >>"$GITHUB_OUTPUT";
+          elif [ "${{ steps.drill.outcome }}" = "failure" ]; then echo "step=floor drill" >>"$GITHUB_OUTPUT"; echo "lane=loop" >>"$GITHUB_OUTPUT";
+          elif [ "${{ steps.deps.outcome }}" = "failure" ]; then echo "step=brew deps" >>"$GITHUB_OUTPUT"; echo "lane=operator" >>"$GITHUB_OUTPUT";
+          else echo "step=workflow plumbing" >>"$GITHUB_OUTPUT"; echo "lane=operator" >>"$GITHUB_OUTPUT"; fi
       - name: file issue on failure
         if: ${{ failure() }}
         uses: ./.github/actions/file-drill-issue
         with:
           marker: "[weekly-macos]"
           workflow-name: "weekly-macos"
+          lane: ${{ steps.classify.outputs.lane }}
+          failed-step: ${{ steps.classify.outputs.step }}
