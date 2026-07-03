@@ -2,7 +2,7 @@
 # bin/run-loop.sh [--scheduled] <loop-name> <path-to-loop.config.sh>
 #
 # The mechanical shell around every agent run. Thin and dumb by design: all
-# judgment lives in agents/<loop>/AGENT.md; everything here is what the
+# judgment lives in roles/<role>/<loop>.md; everything here is what the
 # agent must NOT be able to renegotiate mid-run — locks, kill switch,
 # breaker, timeout, and the post-run floors (no-go revert, self-accept
 # guard, queue lint, stale loop-branch prune, diff accounting, digest
@@ -130,16 +130,18 @@ check_queue_lint() { # $1=since ISO; logs violations, echoes count
   local since=$1 n=0 inum
   while read -r inum; do
     [[ -z "$inum" ]] && continue
-    local j actions comps isbug hasrepro isloop hasverify
+    local j actions comps isbug hasrepro isloop hasverify isdev hasdesign
     j=$(gh issue view "$inum" -R "$GH_REPO" --json labels,body 2>/dev/null) || continue
     actions=$(jq -r '[.labels[].name | select(startswith("action:"))] | length' <<<"$j")
     comps=$(jq -r '[.labels[].name | select(startswith("component:"))] | length' <<<"$j")
     isbug=$(jq -r '[.labels[].name | select(.=="bug")] | length' <<<"$j")
     isloop=$(jq -r '[.labels[].name | select(.=="action:loop")] | length' <<<"$j")
+    isdev=$(jq -r '[.labels[].name | select(.=="action:develop")] | length' <<<"$j")
     hasrepro=$(jq -r '.body | test("(?i)##? ?Repro|Repro:") | if . then 1 else 0 end' <<<"$j")
     hasverify=$(jq -r '.body | test("(?i)##? ?Verify|Verify:") | if . then 1 else 0 end' <<<"$j")
-    if [[ "$actions" != 1 || "$comps" == 0 || ( "$isbug" == 1 && "$hasrepro" == 0 ) || ( "$isloop" == 1 && "$hasverify" == 0 ) ]]; then
-      n=$((n+1)); log "queue lint: #$inum malformed (action=$actions comp=$comps bug=$isbug repro=$hasrepro verify=$hasverify) — no executor will pick it up"
+    hasdesign=$(jq -r '.body | test("(?i)##? ?Design") | if . then 1 else 0 end' <<<"$j")
+    if [[ "$actions" != 1 || "$comps" == 0 || ( "$isbug" == 1 && "$hasrepro" == 0 ) || ( "$isloop" == 1 && "$hasverify" == 0 ) || ( "$isdev" == 1 && ( "$hasdesign" == 0 || "$hasverify" == 0 ) ) ]]; then
+      n=$((n+1)); log "queue lint: #$inum malformed (action=$actions comp=$comps bug=$isbug repro=$hasrepro verify=$hasverify dev=$isdev design=$hasdesign) — no executor will pick it up"
     fi
   done < <(gh issue list -R "$GH_REPO" --label loop-filed --state open \
     --search "created:>=${since%T*}" --json number --jq '.[].number' 2>/dev/null)
@@ -231,8 +233,11 @@ export ILOOP_ROOT ILOOP_CONFIG="$CONFIG" ILOOP_RUN_ID="$TS" ILOOP_STATE="$STATE_
 export ILOOP_DEADLINE_EPOCH=$(( $(date +%s) + TIMEOUT_S - 300 ))
 TIMEOUT_BIN=$(command -v gtimeout || command -v timeout)
 KEEPAWAKE=(env); [[ "$(uname)" == "Darwin" ]] && KEEPAWAKE=(/usr/bin/caffeinate -dims)
-AGENT_PROMPT_FILE="$ILOOP_ROOT/agents/$LOOP/AGENT.md"
-[[ -f "$AGENT_PROMPT_FILE" ]] || { log "no agent prompt at $AGENT_PROMPT_FILE"; RC=1; record_run error; exit 1; }
+# Loop prompt lives at roles/<role>/<loop>.md — role dir is organizational,
+# the loop name is the identifier (prompt-lint enforces uniqueness)
+prompt_files=("$ILOOP_ROOT"/roles/*/"$LOOP".md)
+AGENT_PROMPT_FILE="${prompt_files[0]}"
+[[ -f "$AGENT_PROMPT_FILE" ]] || { log "no agent prompt at roles/*/$LOOP.md under $ILOOP_ROOT"; RC=1; record_run error; exit 1; }
 DIGEST="$PROJECT_DIR/ops/reports/$(date +%F).md"
 DIGEST_PRE_LINES=$(wc -l 2>/dev/null <"$DIGEST" || echo 0)
 HEAD_BEFORE=$(git -C "$PROJECT_DIR" rev-parse HEAD)

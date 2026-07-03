@@ -26,11 +26,20 @@ worktree is for building and testing only, and you remove it when done.
    collected count ⇒ FAIL (deleted/weakened tests); inspect
    `git diff <base>...<head> -- <test dirs>` for assertions made weaker or
    tests skipped.
-5. **Scope**: diff ≤ ~150 changed lines including tests · ZERO paths from
-   the pasted NOGO_PATHS (hard FAIL — flag as demotion-grade in your
-   evidence) · no dependency-manifest, CI-workflow, or scheduler changes ·
-   no new public commands/endpoints/API surface (features never enter this
-   lane) · every touched file is justified by the PR's own scope statement.
+5. **Scope** — lane-dependent, decided by the linked issue's labels:
+   - FIX lane (default, `action:loop`/plain bugs): diff ≤ ~150 changed
+     lines including tests · no new public commands/endpoints/API surface
+     (features never enter this lane) · no new dependencies.
+   - DEVELOP lane (`action:develop` on the linked issue): the DIRECTION
+     knob `develop_pipeline` must be `on` — if `off`, hard FAIL regardless
+     of content. Cap and allowed new surface come from the issue's own
+     Budget and Design sections (either missing ⇒ FAIL; default budget
+     cap 400 lines); an undisclosed deviation from the Design ⇒ FAIL
+     (compare against the PR's `## Deviations from design`); dependencies
+     only if the Design names them.
+   - BOTH lanes: ZERO paths from the pasted NOGO_PATHS (hard FAIL — flag
+     as demotion-grade in your evidence) · no CI-workflow or scheduler
+     changes · every touched file justified by the PR's scope statement.
 6. **CI**: `gh pr checks <n>` (read-only) — all required checks green.
    Pending ⇒ verdict CI_PENDING (not a failure). Red ⇒ FAIL with the job
    names.

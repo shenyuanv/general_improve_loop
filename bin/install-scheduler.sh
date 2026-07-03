@@ -2,7 +2,7 @@
 # bin/install-scheduler.sh <config> [--uninstall]
 # Installs the SCHEDULE from loop.config.sh as launchd agents (macOS) or
 # crontab entries (Linux). Idempotent; re-run after editing SCHEDULE.
-# Loops whose agents/<loop>/AGENT.md is missing are skipped loudly.
+# Loops with no roles/*/<loop>.md prompt are skipped loudly.
 set -euo pipefail
 CONFIG="${1:?usage: install-scheduler.sh <config> [--uninstall]}"
 MODE="${2:-install}"
@@ -21,7 +21,7 @@ if [[ "$OS" == "Darwin" ]]; then
   fi
   for job in "${SCHEDULE[@]}"; do
     IFS='|' read -r loop hour min wday timeout <<<"$job"
-    if [[ ! -f "$ILOOP_ROOT/agents/$loop/AGENT.md" ]]; then echo "SKIP $loop — no agents/$loop/AGENT.md"; continue; fi
+    pf=("$ILOOP_ROOT"/roles/*/"$loop".md); if [[ ! -f "${pf[0]}" ]]; then echo "SKIP $loop — no roles/*/$loop.md prompt"; continue; fi
     label="com.improve-loop.$PROJECT_NAME.$loop"; plist="$LA/$label.plist"; wday_xml=""
     [[ -n "$wday" ]] && wday_xml="<key>Weekday</key><integer>$wday</integer>"
     cat >"$plist" <<PLIST
@@ -54,7 +54,7 @@ else # Linux: crontab entries between managed markers
   NEW="$CUR"
   for job in "${SCHEDULE[@]}"; do
     IFS='|' read -r loop hour min wday timeout <<<"$job"
-    if [[ ! -f "$ILOOP_ROOT/agents/$loop/AGENT.md" ]]; then echo "SKIP $loop — no agents/$loop/AGENT.md"; continue; fi
+    pf=("$ILOOP_ROOT"/roles/*/"$loop".md); if [[ ! -f "${pf[0]}" ]]; then echo "SKIP $loop — no roles/*/$loop.md prompt"; continue; fi
     dow="${wday:-*}"
     NEW+=$'\n'"$min $hour * * $dow LOOP_TIMEOUT_S=$timeout /bin/bash $RUNNER --scheduled $loop $CONFIG $TAG"
     printf 'installed cron %-14s %02d:%02d dow=%s\n' "$loop" "$hour" "$min" "$dow"

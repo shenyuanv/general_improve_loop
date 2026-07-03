@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # loop.config.sh — EVERY project-specific fact lives here and only here.
-# The engine (bin/) and the agent prompts (agents/) are generic; this file
+# The engine (bin/) and the role prompts (roles/) are generic; this file
 # is the adapter. Copy to <your-project>/ops/loop.config.sh and edit.
 # Sourced by bin/run-loop.sh; also read by agents at run time (they get its
 # path in $ILOOP_CONFIG).
@@ -66,6 +66,7 @@ SCHEDULE=(
   "fixer|5|3||3600"
   "e2e-tester|5|33|0|5400"
   "pr-verifier|6|3||3600"
+  "manager|8|33|6|5400"
 )
 
 # ── Limits ────────────────────────────────────────────────────────────────

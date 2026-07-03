@@ -32,7 +32,10 @@ universal write rules, `DIGEST_RETENTION_DAYS`.
    orchestrator commits); quote week-over-week deltas in your DIGEST.
 4. **Ops hygiene** — `ops/` and `$ILOOP_STATE` growing anomalously; stray
    files in ops/ that no contract defines; leftover worktrees
-   (`git worktree list` should be just the main tree by morning).
+   (`git worktree list` should be just the main tree by morning); role
+   workspaces (`ops/roles/<role>/`) over their CHARTER caps (e.g. manager
+   proposals.md >100 entries, notes.md >150 lines) ⇒ ATTENTION finding +
+   mechanical rollup of the oldest entries.
 
 ## Return (exact shape)
 

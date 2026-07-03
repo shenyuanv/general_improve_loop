@@ -15,7 +15,7 @@ fails=0
 viol() { printf '%s: %s: %s\n' "$1" "$2" "$3"; fails=$((fails + 1)); }
 warn() { printf 'warn: %s: %s: %s\n' "$1" "$2" "$3"; }
 
-PROMPTS=(agents/*/AGENT.md agents/*/subagents/*.md)
+PROMPTS=(roles/*/*.md roles/*/subagents/*.md)   # CHARTERs included: they carry refs too
 CONTRACTS=(contracts/*.md)
 REF_SOURCES=("${PROMPTS[@]}" "${CONTRACTS[@]}" bin/*.sh install.sh docs/*.md README.md CLAUDE.md)
 
@@ -46,28 +46,39 @@ for c in contracts/*.md; do
 done
 
 # ── 2. subagent refs resolve; every subagent file has a dispatcher ref ────
-for f in agents/*/AGENT.md; do
+for f in roles/*/*.md; do
+  [[ -f "$f" ]] || continue
   while IFS= read -r r; do
     [[ -f "$r" ]] || viol "$f" "missing-subagent" "$r"
-  done < <(grep -ohE 'agents/[a-z0-9-]+/subagents/[a-z0-9-]+\.md' "$f" 2>/dev/null | sort -u)
+  done < <(grep -ohE 'roles/[a-z-]+/subagents/[a-z0-9-]+\.md' "$f" 2>/dev/null | sort -u)
 done
 # the orchestrator names its four focus subagents in prose, not by path
 for s in guardian operator gardener analyst; do
-  [[ -f "agents/orchestrator/subagents/$s.md" ]] || viol "agents/orchestrator/AGENT.md" "missing-subagent" "$s.md"
+  [[ -f "roles/orchestrator/subagents/$s.md" ]] || viol "roles/orchestrator/orchestrator.md" "missing-subagent" "$s.md"
 done
-for sf in agents/*/subagents/*.md; do
-  dispatcher="$(dirname "$(dirname "$sf")")/AGENT.md"
+# inverse: every subagent is referenced by a sibling LOOP prompt (not just a charter)
+for sf in roles/*/subagents/*.md; do
+  [[ -f "$sf" ]] || continue
+  role_dir="$(dirname "$(dirname "$sf")")"
   base="$(basename "$sf" .md)"
-  grep -q "$base" "$dispatcher" 2>/dev/null || viol "$sf" "unreferenced-subagent" "$base"
+  hit=0
+  for lp in "$role_dir"/*.md; do
+    [[ "$(basename "$lp")" == "CHARTER.md" ]] && continue
+    grep -q "$base" "$lp" && { hit=1; break; }
+  done
+  (( hit )) || viol "$sf" "unreferenced-subagent" "$base"
 done
 
-# ── 3. SCHEDULE ↔ agents/<loop>/ both directions ──────────────────────────
+# ── 3. SCHEDULE ↔ roles/*/<loop>.md both directions ──────────────────────────
 while IFS= read -r l; do
-  [[ -f "agents/$l/AGENT.md" ]] || viol "config/loop.config.example.sh" "schedule-loop-missing" "$l"
+  pf=(roles/*/"$l".md)
+  [[ -f "${pf[0]}" ]] || viol "config/loop.config.example.sh" "schedule-loop-missing" "$l"
 done < <(grep -oE '^[[:space:]]*"[a-z0-9-]+\|' config/loop.config.example.sh | tr -d ' "|')
-for d in agents/*/; do
-  l="$(basename "$d")"
-  grep -qE "^[[:space:]]*\"$l\|" config/loop.config.example.sh || viol "agents/$l" "loop-not-scheduled" "$l"
+for lp in roles/*/*.md; do
+  [[ -f "$lp" ]] || continue
+  l="$(basename "$lp" .md)"
+  [[ "$l" == "CHARTER" ]] && continue
+  grep -qE "^[[:space:]]*\"$l\|" config/loop.config.example.sh || viol "$lp" "loop-not-scheduled" "$l"
 done
 
 # ── 4. config vars named in prompts/contracts exist in the example config ─
@@ -82,7 +93,7 @@ for f in "${PROMPTS[@]}" "${CONTRACTS[@]}"; do
   done < <(grep -ohE "\b($VAR_PATTERN)\b" "$f" 2>/dev/null | sort -u)
 done
 while IFS= read -r v; do
-  grep -rqw "$v" bin agents contracts docs install.sh 2>/dev/null || warn "config/loop.config.example.sh" "orphan-knob" "$v"
+  grep -rqw "$v" bin roles contracts docs install.sh 2>/dev/null || warn "config/loop.config.example.sh" "orphan-knob" "$v"
 done <<<"$assigned"
 
 # ── 5. ILOOP_* tokens ⊆ what the wrapper actually exports ─────────────────
@@ -136,16 +147,37 @@ done
 
 # ── 9. subagent Return shapes match what the dispatchers parse ────────────
 for k in "issue:" "outcome:" "pr_url" "evidence"; do
-  grep -q "$k" agents/fixer/subagents/fix-one-issue.md || viol "agents/fixer/subagents/fix-one-issue.md" "return-shape" "$k"
+  grep -q "$k" roles/developer/subagents/fix-one-issue.md || viol "roles/developer/subagents/fix-one-issue.md" "return-shape" "$k"
 done
 for k in "pr-opened" "repro-failed" "abandoned"; do
-  grep -q "$k" agents/fixer/AGENT.md || viol "agents/fixer/AGENT.md" "return-shape" "$k"
+  grep -q "$k" roles/developer/fixer.md || viol "roles/developer/fixer.md" "return-shape" "$k"
+done
+for k in "issue:" "outcome:" "pr_url" "evidence"; do
+  grep -q "$k" roles/developer/subagents/develop-one-issue.md || viol "roles/developer/subagents/develop-one-issue.md" "return-shape" "$k"
 done
 for k in "pr:" "verdict:" "evidence"; do
-  grep -q "$k" agents/pr-verifier/subagents/verify-one-pr.md || viol "agents/pr-verifier/subagents/verify-one-pr.md" "return-shape" "$k"
+  grep -q "$k" roles/reviewer/subagents/verify-one-pr.md || viol "roles/reviewer/subagents/verify-one-pr.md" "return-shape" "$k"
 done
 for k in "PASS" "FAIL" "CI_PENDING"; do
-  grep -q "$k" agents/pr-verifier/AGENT.md || viol "agents/pr-verifier/AGENT.md" "return-shape" "$k"
+  grep -q "$k" roles/reviewer/pr-verifier.md || viol "roles/reviewer/pr-verifier.md" "return-shape" "$k"
+done
+
+# ── 10. loop names unique across roles (the parallel-collision lesson) ────
+while IFS= read -r d; do
+  [[ -n "$d" ]] && viol "roles/" "duplicate-loop" "$d"
+done < <(for lp in roles/*/*.md; do b="$(basename "$lp" .md)"; [[ "$b" == "CHARTER" ]] || echo "$b"; done | sort | uniq -d)
+
+# ── 11. every role has a CHARTER; every role but owner has a loop prompt ──
+for d in roles/*/; do
+  role="$(basename "$d")"
+  [[ -f "${d}CHARTER.md" ]] || viol "roles/$role" "missing-charter" "CHARTER.md"
+  if [[ "$role" != "owner" ]]; then
+    lc=0
+    for lp in "${d}"*.md; do
+      [[ -f "$lp" && "$(basename "$lp")" != "CHARTER.md" ]] && lc=$((lc + 1))
+    done
+    (( lc >= 1 )) || viol "roles/$role" "role-without-loop" "$role"
+  fi
 done
 
 echo "prompt-lint: $fails violation(s)"

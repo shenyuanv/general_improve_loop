@@ -13,6 +13,7 @@ incident (DEMOTED).
 | Fixer **fix subagent** (one per issue) | its ONE branch `loop/fix-GH<n>` in its own worktree; never main | its ONE `gh pr create` (label `loop-pr`, body `Fixes #<n>`) |
 | Verifier **dispatcher** | ops/ paths only; `git pull --ff-only` after merges | on `loop-pr` PRs ONLY: `gh pr merge --squash --delete-branch` on PASS — NEVER with `--admin`/`--force` (branch protection's required CI check is a floor, not a suggestion); `gh pr comment` (verbatim evidence) + `changes-requested` label on FAIL; `gh pr close --delete-branch` (evidence comment, no label) on a stale-PASS merge conflict — re-arms the fixer for a fresh fix |
 | Verifier **verify subagent** (one per PR) | none (worktree read/build/test only) | none |
+| Manager (weekly) | ops/roles/manager/ + its digest section only, `loop(manager):` prefix; push under the guard | `gh issue create` ONLY (🙋 proposals + unaccepted design briefs) — never `accepted`/`rejected`/any label edit, never comments on others' issues |
 
 Universal rules, every lane:
 
@@ -29,3 +30,7 @@ Universal rules, every lane:
    only — no user emails/IPs/filenames.
 6. Notifications: write `> NOTIFY: <short>` digest lines (max 3/run); the
    wrapper fans them out. Never call the OS notifier directly.
+7. Role workspaces: a role may write `ops/roles/<its-role>/` within its
+   ops lane — never another role's workspace. Workspace files are
+   contract-bound (schemas + caps in the role's CHARTER.md), not freeform
+   memory; the gardener flags cap breaches.

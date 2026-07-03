@@ -48,7 +48,7 @@ guessing.
 ## 2. Focus subagents — spawn guardian + operator + gardener in PARALLEL
 (one message, three Agent-tool calls), analyst AFTER operator returns.
 Each subagent prompt = the matching file in
-`$ILOOP_ROOT/agents/orchestrator/subagents/` + paste in: the config path,
+`$ILOOP_ROOT/roles/orchestrator/subagents/` + paste in: the config path,
 the no-go list, write-policy §universal rules, and preflight JSON. Each
 returns: `STATUS: ok|degraded|failed` · `FINDINGS` (each with evidence and
 a proposed-issue block per issue-format.md when actionable) · `METRICS`

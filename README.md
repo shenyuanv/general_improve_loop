@@ -73,8 +73,9 @@ test suite; `bin/scorecard.sh` prints the loop-health numbers. Details:
 ```
 bin/         the mechanical shell (wrapper, preflight, notify, scheduler)
              + scorecard.sh (loop-health metrics for any adopter)
-agents/      one directory per agent; AGENT.md is its exact prompt;
-             subagents/ holds the per-issue / per-PR / per-focus prompts
+roles/       one folder per ROLE (owner, manager, orchestrator, developer,
+             tester, reviewer): CHARTER.md = mission+authority, <loop>.md =
+             that loop's exact prompt, subagents/ = per-issue/PR/focus prompts
 contracts/   the shared rules every agent obeys (queue state machine,
              issue format, write policy, safety floors, digest format)
 config/      loop.config.example.sh — every project-specific fact

@@ -34,6 +34,9 @@ deploy: auto                # ack | auto — flipped 2026-07-03 after the staged
                             #   broken promote and rollback restored green
 push: push                  # dedicated repo; loops push loop-prefixed work
 fix_pipeline: on            # reproduced bugs flow issue → PR → verify+merge
+develop_pipeline: off       # off | on — accepted action:develop design briefs
+                            #   flow through the developer lane (budget from
+                            #   the issue, same adversarial verifier)
 vm_cadence: daily           # the adoption journey runs nightly (stub agent, ~free)
 notify_on: [failure, deploy, rollback, incident, pending-ack, new-user, decision-needed]
 ```

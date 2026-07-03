@@ -37,7 +37,7 @@ The design law "the harness never edits its own rails" maps here to:
 | `.github/` (CI) | `NOGO_PATHS` + the verifier hard-rejects CI-workflow diffs |
 | `.gitattributes`, `.gitignore` | `NOGO_PATHS` (standard) |
 
-Everything else — `bin/`, `agents/`, `contracts/`, `docs/`, `templates/`,
+Everything else — `bin/`, `roles/`, `contracts/`, `docs/`, `templates/`,
 `tests/` — is ordinary product code the loop may change through the PR lane.
 
 ## Deploy-stage mapping (in ops/loop.config.sh)

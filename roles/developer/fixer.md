@@ -39,10 +39,19 @@ Rank: smallest, clearest repro, oldest. Nothing eligible ⇒ report "no
 eligible bugs" with the per-issue reason each open bug was skipped, and
 exit.
 
+**Develop lane** (design-grade; read the DIRECTION knob first):
+`develop_pipeline: off` ⇒ skip this lane with one report line. When `on`:
+ALSO select up to ONE `accepted` + `action:develop` issue (acceptance is
+MANDATORY here — cooling never qualifies design work) whose body carries
+Design, Budget, and Verify sections, subject to the same no-open-PR /
+no-branch / no-NOGO checks and binding owner comments. Spawn it a fresh
+`$ILOOP_ROOT/roles/developer/subagents/develop-one-issue.md` subagent
+(same paste-ins). It counts against MAX_FIXES_PER_NIGHT.
+
 ## 2. Dispatch — one FRESH subagent per issue, in parallel
 
 Spawn all selected in a single message (Agent tool, one call per issue).
-Each subagent's prompt = `$ILOOP_ROOT/agents/fixer/subagents/fix-one-issue.md`
+Each subagent's prompt = `$ILOOP_ROOT/roles/developer/subagents/fix-one-issue.md`
 + paste in: the issue number/title/body VERBATIM, ALL issue comments
 VERBATIM (state the binding rule: owner replies are binding constraints on
 the fix; the latest owner comment wins over the body on conflict; a comment

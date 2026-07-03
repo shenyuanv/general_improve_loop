@@ -23,7 +23,7 @@ the wrapper's revert check, so nothing forbidden may get past it.
 `gh pr list -R $GH_REPO --label loop-pr --state open` — take up to
 MAX_VERIFIES_PER_NIGHT, oldest first, one fresh subagent each, spawned in a
 single message. Each subagent's prompt =
-`$ILOOP_ROOT/agents/pr-verifier/subagents/verify-one-pr.md` + paste in: the
+`$ILOOP_ROOT/roles/reviewer/subagents/verify-one-pr.md` + paste in: the
 PR number, the config path, the NOGO_PATHS list.
 
 ## 2. Execute verdicts (you alone)
