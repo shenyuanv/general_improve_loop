@@ -124,7 +124,17 @@ for f in "${PROMPTS[@]}" "${CONTRACTS[@]}" docs/*.md bin/*.sh README.md; do
   done < <(grep -ohE 'ops/[A-Z_]+(\.[A-Za-z]+)?' "$f" 2>/dev/null | sort -u)
 done
 
-# ── 8. subagent Return shapes match what the dispatchers parse ────────────
+# ── 8. adopter-facing docs use placeholders, not the maintainer's clone ───
+# (SELF-HOSTING.md deliberately documents the maintainer's own deployment,
+#  and install.sh's sed consumes the example config's literal — both exempt.)
+for f in docs/INTEGRATION.md README.md; do
+  [[ -f "$f" ]] || continue
+  while IFS= read -r t; do
+    viol "$f" "maintainer-path" "$t"
+  done < <(grep -ohE '[~A-Za-z0-9_/.$-]*sourcecode/[A-Za-z0-9_.-]+' "$f" 2>/dev/null | sort -u)
+done
+
+# ── 9. subagent Return shapes match what the dispatchers parse ────────────
 for k in "issue:" "outcome:" "pr_url" "evidence"; do
   grep -q "$k" agents/fixer/subagents/fix-one-issue.md || viol "agents/fixer/subagents/fix-one-issue.md" "return-shape" "$k"
 done

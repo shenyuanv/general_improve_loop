@@ -47,8 +47,8 @@ funnel table proves every open item has a named next actor.
 ## Quickstart
 
 ```bash
-git clone <this repo> ~/sourcecode/general_improve_loop
-cd ~/sourcecode/general_improve_loop
+git clone <this repo>
+cd general_improve_loop
 ./install.sh /path/to/your/project     # scaffolds ops/, labels, config
 $EDITOR /path/to/your/project/ops/loop.config.sh   # fill in your facts
 ./bin/install-scheduler.sh /path/to/your/project/ops/loop.config.sh
