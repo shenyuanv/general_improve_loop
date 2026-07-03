@@ -55,7 +55,8 @@ jobs:
           git -C "$T" init -q
           git -C "$T" -c user.name=ci -c user.email=ci@example.invalid commit -q --allow-empty -m seed
           ./install.sh "$T" >/dev/null
-          ./install.sh "$T" | grep -q "kept existing"
+          out="$(./install.sh "$T")"           # capture, don't pipe (grep -q would SIGPIPE the script)
+          grep -q "kept existing" <<<"$out"
       - name: file issue on failure
         if: ${{ failure() }}
         uses: ./.github/actions/file-drill-issue
