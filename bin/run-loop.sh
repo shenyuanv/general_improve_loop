@@ -5,7 +5,8 @@
 # judgment lives in agents/<loop>/AGENT.md; everything here is what the
 # agent must NOT be able to renegotiate mid-run — locks, kill switch,
 # breaker, timeout, and the post-run floors (no-go revert, self-accept
-# guard, queue lint, diff accounting, digest guarantee, notify fan-out).
+# guard, queue lint, stale loop-branch prune, diff accounting, digest
+# guarantee, notify fan-out).
 #
 # Test modes (used by docs/AUDIT-CHECKLIST.md):
 #   run-loop.sh --check-nogo <base-sha> <config>
@@ -114,6 +115,28 @@ check_queue_lint() { # $1=since ISO; logs violations, echoes count
   echo "$n"
 }
 
+# ── Floor: stale loop-branch prune — a merged/closed loop PR must not leave
+# its local loop/fix-GH<n> branch behind (the fixer treats "branch exists"
+# as ineligible, so one stale ref silently blocks every future re-fix of
+# that issue). Loop-prefixed refs ONLY — never human branches; a branch
+# whose newest PR is OPEN, or with no PR / unreadable state, is KEPT.
+prune_stale_loop_branches() {
+  local b state
+  while IFS= read -r b; do
+    [[ "$b" =~ ^loop/fix-GH[0-9]+$ ]] || continue
+    state=$(gh pr list -R "$GH_REPO" --head "$b" --state all --limit 1 \
+      --json state --jq '.[0].state' 2>/dev/null)
+    if [[ "$state" == "MERGED" || "$state" == "CLOSED" ]]; then
+      if git -C "$PROJECT_DIR" branch -D "$b" >>"$LOG" 2>&1; then
+        log "stale-branch prune: deleted $b (PR $state)"
+      else
+        log "stale-branch prune: could not delete $b (PR $state) — checked out in a worktree?"
+      fi
+    fi
+  done < <(git -C "$PROJECT_DIR" for-each-ref --format='%(refname:short)' \
+    'refs/heads/loop/fix-GH*' 2>/dev/null)
+}
+
 case "$LOOP" in
   --check-nogo)        LOG=/dev/stderr; read -r N F <<<"$(check_nogo "$PROJECT_DIR" "$CHECK_ARG")"; echo "nogo_reverts=$N nogo_revert_failures=$F"; (( N + F > 0 )) && exit 3 || exit 0 ;;
   --check-self-accept) LOG=/dev/stderr; N=$(check_self_accept "$CHECK_ARG"); echo "self_accepts_stripped=$N"; (( N > 0 )) && exit 3 || exit 0 ;;
@@ -207,6 +230,7 @@ if (( SELF_ACCEPTS > 0 )); then
 fi
 QUEUE_LINT=$(check_queue_lint "$START_ISO")
 (( QUEUE_LINT > 0 )) && notify "$PROJECT_NAME $LOOP" "queue lint: $QUEUE_LINT malformed issue(s) filed this run — see $(basename "$LOG")"
+prune_stale_loop_branches
 COMMITS=$(git rev-list --count "$HEAD_BEFORE"..HEAD 2>/dev/null || echo 0)
 read -r INS DEL <<<"$(git diff --numstat "$HEAD_BEFORE"..HEAD 2>/dev/null | awk '{i+=$1; d+=$2} END{printf "%d %d", i, d}')"
 

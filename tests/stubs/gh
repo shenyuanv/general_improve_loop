@@ -39,7 +39,14 @@ case "${1:-} ${2:-}" in
   "issue create") mut "$*"; echo "https://github.com/stub-owner/stub-repo/issues/999"; exit 0 ;;
   "label create") mut "$*"; exit "${T_GH_LABEL_CREATE_RC:-0}" ;;
   "label edit")   mut "$*"; exit 0 ;;
-  "pr list")      emit "[]"; exit 0 ;;
+  "pr list")
+    head_ref=""
+    for ((i = 0; i < ${#args[@]}; i++)); do
+      if [[ "${args[i]}" == "--head" ]] && (( i + 1 < ${#args[@]} )); then head_ref="${args[i+1]}"; fi
+    done
+    f="$FIX/prs/${head_ref//\//__}.json"   # branch slashes → __ in fixture name
+    if [[ -n "$head_ref" && -f "$f" ]]; then emit "$(cat "$f")"; exit 0; fi
+    emit "[]"; exit 0 ;;
   "pr create")    mut "$*"; echo "https://github.com/stub-owner/stub-repo/pull/999"; exit 0 ;;
   "pr merge"|"pr comment"|"pr edit") mut "$*"; exit 0 ;;
   "pr checks")    echo "all checks passing"; exit 0 ;;
