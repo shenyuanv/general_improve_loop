@@ -9,7 +9,7 @@ A project-agnostic self-improvement harness: a nightly relay of headless AI agen
 ## Commands
 
 - **Test suite (the GATES)**: `bash tests/run.sh` — hermetic floor tests, zero dependencies. Filter by substring: `bash tests/run.sh t07 breaker`; list: `--list`; verbose: `-v`. A single test also runs directly: `bash tests/t/t01-nogo-revert-single.sh`.
-- **Known-failures contract**: `tests/known-failures.txt` lists tests pinning OPEN bugs — they report `xfail`; if one passes it's `XPASS` and the suite FAILS. A PR fixing a pinned bug must also remove its line (mechanical fail-before/pass-after).
+- **Known-failures contract**: a marker file `tests/known-failures.d/<test-name>` pins an OPEN bug — pinned tests report `xfail`; if one passes it's `XPASS` and the suite FAILS. A PR fixing a pinned bug must also `git rm` its marker (mechanical fail-before/pass-after; one file per pin keeps concurrent flips conflict-free).
 - Cross-reference lint: `bash tests/prompt-lint.sh` (markdown is load-bearing; this catches broken contract/subagent/config-var/label references)
 - Shell lint: `shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh`
 - Run one loop supervised: `bash bin/run-loop.sh <loop> <config>` where `<loop>` ∈ orchestrator | e2e-user | fixer | e2e-tester | pr-verifier

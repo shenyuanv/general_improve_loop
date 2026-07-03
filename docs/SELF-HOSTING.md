@@ -56,11 +56,13 @@ get caught by verify-live and rolled back.
 
 ## Known-failures contract (fail-before/pass-after, mechanically)
 
-`tests/known-failures.txt` lists tests that pin OPEN bugs: they report
-`xfail` while the bug exists, and a listed test that *passes* fails the
-whole suite (`XPASS`). So the PR that fixes a pinned bug must also remove
-its line — the suite itself enforces fail-before/pass-after, and the
-pr-verifier sees it as a test-count/gate diff.
+A marker file `tests/known-failures.d/<test-name>` pins an OPEN bug (its
+content is the tracking issue ref): the test reports `xfail` while the bug
+exists, and a pinned test that *passes* fails the whole suite (`XPASS`).
+So the PR that fixes a pinned bug must also `git rm` its marker — the
+suite itself enforces fail-before/pass-after, and the pr-verifier sees it
+as a test-count/gate diff. One marker file per pin keeps concurrent pin
+flips conflict-free (issue #34).
 
 ## Measurement
 
