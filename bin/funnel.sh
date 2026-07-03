@@ -44,10 +44,14 @@ jq -r --arg now "$NOW" --argjson cooling "$COOLING" --argjson prs "$PRS" '
       {o: 3, s: "operator task", a: "owner runs the body commands", w: "owner leisure\(nudge)"}
     elif has("accepted") and has("action:loop") then
       {o: 4, s: "accepted fix", a: "fixer dispatcher", w: "tonight"}
+    elif has("accepted") and has("action:develop") then
+      {o: 4, s: "accepted design", a: "developer lane (fixer dispatcher)", w: "tonight if develop_pipeline: on"}
     elif has("action:loop") and has("bug") and repro then
       (if cooled
        then {o: 5, s: "cooled fix", a: "fixer dispatcher", w: "tonight (cooled since \(cool_ts))"}
        else {o: 5, s: "cooling", a: "fixer dispatcher", w: "after \(cool_ts)"} end)
+    elif has("action:develop") then
+      {o: 6, s: "design brief awaiting acceptance", a: "owner (design never cools)", w: "owner leisure\(nudge)"}
     elif has("action:loop") then
       {o: 6, s: "malformed filing (missing \(if has("bug") | not then "bug" elif repro | not then "Repro" else "component" end))",
        a: "orchestrator grooming", w: "tonight, then cooling"}

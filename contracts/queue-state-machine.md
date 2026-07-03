@@ -13,6 +13,8 @@ nothing happening?" — the digest's funnel table answers it first.
 | `action:operator` | owner runs the exact commands in the body | owner's leisure (aging nudge >7 d) |
 | `accepted` + `action:loop` | fixer dispatcher | tonight |
 | `action:loop` + `bug` + `Repro:`, unaccepted | fixer dispatcher | after `COOLING_HOURS` from createdAt (state the date) |
+| `accepted` + `action:develop` (Design/Budget/Verify in body) | developer lane (fixer dispatcher) | tonight — only while DIRECTION `develop_pipeline: on` |
+| `action:develop`, unaccepted | owner (acceptance is mandatory — design briefs never cool) | owner's leisure (aging nudge >7 d) |
 | `action:loop`, missing `bug`/`Repro`/`component:*` | orchestrator grooming | tonight, then cooling |
 | open PR labeled `loop-pr` | pr-verifier dispatcher | tonight |
 
@@ -23,8 +25,11 @@ nothing happening?" — the digest's funnel table answers it first.
   wrapper's self-accept guard strips an `accepted` applied during a loop's
   run window when the run transcript shows the loop adding it; no evidence
   ⇒ kept + FYI, assumed owner (contracts/safety-floors.md).
-- `action:loop` | `action:operator` | `action:interactive` — exactly one per
-  issue: who executes.
+- `action:loop` | `action:operator` | `action:interactive` |
+  `action:develop` — exactly one per issue: who executes. `action:develop`
+  is the design lane: requires `accepted` (never cools) + body sections
+  `## Design`/`## Budget`/`## Verify`, and runs only while DIRECTION
+  `develop_pipeline: on`.
 - `component:<area>` — exactly one; projects define their own set (see
   templates/labels.sh).
 - `bug` — eligible for the automated fix lane **only with a runnable `Repro:`**.

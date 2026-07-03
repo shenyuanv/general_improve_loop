@@ -18,13 +18,22 @@ flags filings that no executor could ever pick up):
  loop — auto-fixable once accepted or cooled (requires bug + Repro + Verify)
  operator: <exact copy-pasteable commands the human runs>
  interactive: <exact ask the human pastes into an agent session — used for
-   no-go-path work or design-grade changes>>
+   no-go-path work or design-grade changes>
+ develop: <design-grade work for the developer lane — requires the Design/
+   Budget sections below, owner acceptance, and DIRECTION develop_pipeline: on>>
 
 ## Repro            (REQUIRED when labeled `bug`)
 <exact commands from a clean state that demonstrate the defect — commands
 you actually ran tonight; paste them, don't reconstruct them>
 
-## Verify           (REQUIRED for action:loop)
+## Design           (REQUIRED for action:develop)
+<the implementation plan the developer subagent follows; deviations must
+be disclosed in the PR>
+
+## Budget           (REQUIRED for action:develop)
+<max changed lines including tests; the verifier enforces it — default 400>
+
+## Verify           (REQUIRED for action:loop and action:develop)
 <machine-checkable command(s) that prove the fix; the verifier runs these>
 ```
 

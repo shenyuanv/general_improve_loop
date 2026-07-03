@@ -180,6 +180,45 @@ for d in roles/*/; do
   fi
 done
 
+# ── 12. floors inventory: every wrapper floor is documented (issue #48) ───
+while IFS= read -r fl; do
+  for doc in CLAUDE.md contracts/safety-floors.md; do
+    grep -qi "$fl" "$doc" || viol "$doc" "undocumented-floor" "$fl"
+  done
+done < <(grep -oE '^# ── Floor: [^—]+' bin/run-loop.sh | sed 's/^# ── Floor: //; s/[[:space:]]*$//')
+
+# ── 13. label encoders: code carrying ≥3 canonical labels must be in ──────
+#        CLAUDE.md's label-vocabulary list, and every file listed must exist
+label_para="$(grep -A2 'Label vocabulary is a contract' CLAUDE.md)"
+for f in bin/*.sh templates/*.sh; do
+  [[ -f "$f" ]] || continue
+  hits=0
+  while IFS= read -r l; do
+    [[ -n "$l" ]] && grep -qF -- "$l" "$f" && hits=$((hits + 1))
+  done <<<"$canon"
+  if (( hits >= 3 )); then
+    grep -qF "$(basename "$f")" <<<"$label_para" || viol "CLAUDE.md" "unlisted-label-encoder" "$f"
+  fi
+done
+while IFS= read -r tok; do
+  [[ -f "$tok" ]] || viol "CLAUDE.md" "listed-encoder-missing" "$tok"
+done < <(grep -ohE '`[a-z/._-]+/[a-z._-]+`' <<<"$label_para" | tr -d '`' | sort -u)
+
+# ── 14. loop/lane inventory: loops in CLAUDE.md + DESIGN.md; queue-lint ───
+#        action lanes documented in both contracts and classified by funnel
+for lp in roles/*/*.md; do
+  [[ -f "$lp" ]] || continue
+  l="$(basename "$lp" .md)"
+  [[ "$l" == "CHARTER" ]] && continue
+  grep -qi "$l" CLAUDE.md || viol "CLAUDE.md" "missing-loop-doc" "$l"
+  grep -qi "$l" docs/DESIGN.md || viol "docs/DESIGN.md" "missing-loop-doc" "$l"
+done
+while IFS= read -r a; do
+  for doc in contracts/queue-state-machine.md contracts/issue-format.md bin/funnel.sh; do
+    grep -q "$a" "$doc" || viol "$doc" "missing-lane-doc" "$a"
+  done
+done < <(grep -oE 'action:(loop|develop|operator|interactive)' bin/run-loop.sh | sort -u)
+
 echo "prompt-lint: $fails violation(s)"
 (( fails > 0 )) && exit 1
 exit 0

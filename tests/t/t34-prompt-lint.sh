@@ -29,6 +29,8 @@ echo "honor ops/PASUE before acting" >>"$tree/roles/tester/e2e-tester.md"
 
 echo "duplicate loop probe" >"$tree/roles/tester/fixer.md"       # class 10: dup loop name
 rm "$tree/roles/reviewer/CHARTER.md"                              # class 11: missing charter
+printf '# ── Floor: canary drill — undocumented on purpose ──\n' >>"$tree/bin/run-loop.sh"   # class 12
+printf 'accepted\nloop-filed\nloop-pr\n' >"$tree/bin/fake-encoder.sh"                       # class 13
 
 set +e
 bash "$T_REPO/tests/prompt-lint.sh" "$tree" >"$T_CAP/lint-planted.out" 2>&1
@@ -44,3 +46,5 @@ t_assert_contains "$T_CAP/lint-planted.out" "unknown-label: action:ghost"
 t_assert_contains "$T_CAP/lint-planted.out" "unknown-marker: ops/PASUE"
 t_assert_contains "$T_CAP/lint-planted.out" "duplicate-loop: fixer"
 t_assert_contains "$T_CAP/lint-planted.out" "missing-charter: CHARTER.md"
+t_assert_contains "$T_CAP/lint-planted.out" "undocumented-floor: canary drill"
+t_assert_contains "$T_CAP/lint-planted.out" "unlisted-label-encoder: bin/fake-encoder.sh"

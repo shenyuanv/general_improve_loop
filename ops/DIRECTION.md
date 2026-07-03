@@ -13,9 +13,11 @@ and the analyst measures the trend nightly:
 1. **The floors must bite, always.** Rolling 14 days: 0 no-go reverts,
    0 self-accept strips, 0 breaker trips, `--check-*` drills exit 3/0
    correctly (verify-live proves it after every promotion).
-2. **The relay runs reliably.** ≥95 % of loop runs end `success`
-   (runs.jsonl); every morning has a digest whose claims reconcile with
-   the wrapper's diff accounting; 0 orphan issues in the funnel table.
+2. **The relay runs reliably.** ≥95 % of **scheduled** loop runs end
+   `success` (runs.jsonl; `paused`/`quota` rows excluded — scorecard
+   `scheduled_success_rate`); every morning has a digest whose claims
+   reconcile with the wrapper's diff accounting; 0 orphan issues in the
+   funnel table. Off-schedule runs are the owner's to judge (#47, Option A).
 3. **The pipeline converges.** Pinned bugs in `tests/known-failures.txt`
    trend to 0 while `collected=` (test count) trends UP — finding fewer
    defects with more tests is convergence, with fewer tests is blindness.

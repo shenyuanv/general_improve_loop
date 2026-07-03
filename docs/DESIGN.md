@@ -34,7 +34,16 @@ intent future audits diff against.
         merged fixes deploy on the next cycle; the next journey re-tests
         them in the wild ─────────────────────────────── the loop closes
  ~07:00 OWNER reads one digest: Status → Needs-you → done in 15 seconds
+ Sat 08:33 MANAGER  strategy at proposal level: convergence verdict vs the
+                    DIRECTION bar, ≤2 🙋 amendment proposals, ≤1 design
+                    brief — proposals only; the owner stays the authorizer
 ```
+
+Prompts live one folder per role — `roles/{owner,manager,orchestrator,
+developer,tester,reviewer}/` with a CHARTER.md each; loop names are the
+stable identifiers. The developer also carries a knob-gated design lane
+(`develop_pipeline`, accepted `action:develop` briefs with Design/Budget/
+Verify, budget-capped, same adversarial verifier).
 
 ## Design laws (each learned from a real failure)
 
