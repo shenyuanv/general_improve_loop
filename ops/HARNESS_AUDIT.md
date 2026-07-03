@@ -1,5 +1,37 @@
 # Harness audits (append-only; diff each entry against the previous)
 
+## Hardening addendum — 2026-07-03 evening — boundary closures + cycle 6
+
+Post-convergence plan executed (owner Track O + loop cycle 6). The four
+boundary classes the 5-cycle run exposed are closed:
+
+- **Quota**: 429s now `result:"quota"` + `resets_at`, breaker-exempt,
+  reset-time notification (#30 → PR #37; t46 pins 3×quota ⇒ no latch).
+- **Identity**: `GH_AUTH_USER="shenyuanv"` pinned (mechanism from 8db3860);
+  live flip-drill passed — active-account switch can no longer touch a run
+  (#20 closed).
+- **Contention**: pins are per-test marker files (`tests/known-failures.d/`,
+  #34 → PR #38) — concurrent flips conflict-free; verifier stale-PASS now
+  closes+deletes-branch (write-policy lane extended) instead of the PR#13
+  dead-end.
+- **Remote blindness**: post-run floors scan the fetched tip (#25 → PR #39).
+  L4 drill exposed that the `--check-nogo` DRILL mode still scans local-only
+  → #41 filed (the floor is wired; the audit tooling isn't).
+- **Mechanization**: `bin/funnel.sh` computes the funnel (operator annotates);
+  first mechanized digest was also the **first 🟢 GREEN digest**.
+- **Drills run for real**: staged bad-deploy → verify-live RED → rollback →
+  green (#8 closed; promote/rollback/promote triplet in promotions.jsonl)
+  → `deploy: auto` flipped. Defense-in-depth proven in anger the same
+  evening: PRs #37+#38 collided on test id t46 — guard t43 (loop-built)
+  went red on merged main, verify-live blocked the promotion, rollback
+  restored green, owner red-gate-renamed, #40 files the dispatcher-side
+  prevention.
+- **Steady state entered**: launchd schedule installed (03:33→06:03,
+  e2e-tester Sundays); queue = 5 cooling loop-filed items, 0 orphans,
+  0 decisions open; tests 47 (0 pins); LOC 2723/1823; deps 0.
+
+Next audit: full 10-item re-score ~2026-07-17.
+
 ## Convergence run — 2026-07-03 — 5 supervised self-improvement cycles
 
 First end-to-end dogfood: the harness ran its full relay against its own
