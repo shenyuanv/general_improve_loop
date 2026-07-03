@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 # T03 — no-go revert FAILURE path: an uncommitted edit to the same fenced
-# file makes `git revert` refuse; the wrapper must survive and log it.
-#
-# PINS BUG S5: the failed revert is not counted, so the WORST case —
-# violation still in history — creates no DEMOTED and no notification.
-# When that bug is fixed, flip the marked assertions to their intended
-# versions (DEMOTED present, notification sent).
+# file makes `git revert` refuse; the wrapper must survive, log it, and
+# escalate at least as loudly as a successful revert — the violation is
+# still in history, so it is counted, creates ops/DEMOTED, and notifies
+# with "needs human" wording (fixed bug S5, issue #3).
 source "$(dirname "$0")/../lib.sh"
 t_setup
 
@@ -20,7 +18,9 @@ t_run_loop orchestrator
 t_assert_rc 0                                       # wrapper must not crash
 t_assert_contains "$(t_runlog orchestrator)" "no-go revert FAILED"
 t_assert_contains "$T_PROJ/ops/DIRECTION.md" "tampered by agent"  # still tampered!
-# ── current (buggy) behavior pinned below — see bug S5 ──
-t_assert_eq "$(t_row .nogo_reverts)" "0"
-t_assert_absent "$T_PROJ/ops/DEMOTED"
-t_assert_not_contains "$T_CAP/notifications.log" "NO-GO VIOLATION"
+# ── intended behavior (was pinned buggy: count 0, no DEMOTED, no notify) ──
+t_assert_eq "$(t_row .nogo_reverts)" "1"            # failed revert is counted
+t_assert_exists "$T_PROJ/ops/DEMOTED"
+t_assert_contains "$T_PROJ/ops/DEMOTED" "needs human"
+t_assert_contains "$T_CAP/notifications.log" "NO-GO VIOLATION"
+t_assert_contains "$T_CAP/notifications.log" "needs human"
