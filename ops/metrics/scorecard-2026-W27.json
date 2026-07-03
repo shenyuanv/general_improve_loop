@@ -1,18 +1,18 @@
 {
-  "ts": "2026-07-03T11:42:46Z",
+  "ts": "2026-07-03T16:13:22Z",
   "week": "2026-W27",
   "window_days": 14,
   "project": "general_improve_loop",
   "runs": {
-    "window_runs": 24,
-    "success_rate": 87,
+    "window_runs": 26,
+    "success_rate": 88,
     "scheduled_success_rate": null,
     "results": {
       "error": 3,
       "paused": 1,
-      "success": 20
+      "success": 22
     },
-    "cost_total_usd": 189.54,
+    "cost_total_usd": 210.38,
     "nogo_reverts": 0,
     "timeouts": 0,
     "by_loop": {
@@ -26,10 +26,15 @@
         "ok": 6,
         "cost_usd": 62.75
       },
+      "manager": {
+        "runs": 1,
+        "ok": 1,
+        "cost_usd": 5.01
+      },
       "orchestrator": {
-        "runs": 8,
-        "ok": 6,
-        "cost_usd": 74.72
+        "runs": 9,
+        "ok": 7,
+        "cost_usd": 90.55
       },
       "pr-verifier": {
         "runs": 6,
@@ -42,7 +47,7 @@
     "open": {
       "loop_filed": 3,
       "accepted": 0,
-      "action_loop": 5,
+      "action_loop": 4,
       "decisions": 0,
       "bugs": 5,
       "loop_prs": 0
@@ -65,8 +70,8 @@
   },
   "tester_latest": null,
   "ratchet": {
-    "loc_product": 3199,
-    "loc_tests": 1885,
+    "loc_product": 3287,
+    "loc_tests": 1928,
     "deps": 0,
     "tests_collected": 48
   },

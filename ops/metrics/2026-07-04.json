@@ -1,0 +1,132 @@
+{
+  "date": "2026-07-04",
+  "run_id": "20260704-000614",
+  "mode": "NORMAL",
+  "trigger": "manual (off-schedule 00:06 local; first --scheduled relay fires 03:33)",
+  "gates": {
+    "green": true,
+    "results": [
+      {
+        "cmd": "bash tests/run.sh",
+        "rc": 0,
+        "seconds": 50,
+        "collected": 48,
+        "passed": 48,
+        "failed": 0,
+        "xfail": 0,
+        "xpass": 0
+      },
+      {
+        "cmd": "bash tests/prompt-lint.sh",
+        "rc": 0,
+        "seconds": 1,
+        "violations": 0,
+        "warns": 0
+      },
+      {
+        "cmd": "shellcheck --severity=warning bin/*.sh install.sh templates/labels.sh selfhost/*.sh tests/*.sh",
+        "rc": 0,
+        "seconds": 1
+      }
+    ],
+    "ci_main": "ci workflow success at 8c705fe; nightly-drills red 16:05Z = owner-dispatched planted filing-path drill (filer + lane routing proven, filed #49); weekly-macos green",
+    "known_failures_pins": []
+  },
+  "security": {
+    "auth_failures_24h": 0,
+    "gh_active_account": "shenyuanv (pinned via GH_AUTH_USER + GH_TOKEN)",
+    "account_flips_since_0045Z": 0,
+    "errors_24h": 3,
+    "errors_code_caused": 0,
+    "nogo_reverts": 0,
+    "self_accept_strips": 0,
+    "breaker_trips": 0,
+    "markers": "none",
+    "ci_nightly_drills": "red=planted drill, filer+routing verified, issue #49 filed",
+    "ci_weekly_macos": "green"
+  },
+  "data_safety": {
+    "promotion_events_lifetime": 20,
+    "rollbacks_executed": 2,
+    "live_main_origin": "8c705fe (all equal)",
+    "deploys_ledger_lag_rows_backfilled": 3,
+    "journeys_rows": 2,
+    "last_journey_verdict": "PASS@6eb6b6a 2026-07-03T01:23Z",
+    "journey_gap_promotes": 13,
+    "state_dir_replication": "single-machine (standing note)"
+  },
+  "deployed": {
+    "live_commit": "8c705fe",
+    "drift": "none (drift.sh exit 0)",
+    "deploy_attempted": false,
+    "rollbacks_tonight": 0,
+    "blocked_marker": false,
+    "last_promotion": "2026-07-03T15:55:53Z -> 8c705fe (owner-manual)",
+    "auto_lane_exercised": false
+  },
+  "telemetry": {
+    "window": "24h",
+    "runs": 26,
+    "results": {
+      "success": 22,
+      "error": 3,
+      "paused": 1
+    },
+    "cost_usd_by_loop": {
+      "orchestrator": 90.55,
+      "fixer": 62.75,
+      "pr-verifier": 39.81,
+      "e2e-user": 12.26,
+      "manager": 5.01
+    },
+    "cost_usd_24h": 210.38,
+    "commits_24h": 36,
+    "nogo_reverts": 0,
+    "timeouts": 0,
+    "scheduled_success_rate": null,
+    "scheduler": "6/6 launchd jobs loaded with --scheduled into live checkout; first scheduled cycle 03:33 local 2026-07-04",
+    "loop_generated_identities_excluded": 2,
+    "new_real_users_24h": "n/a (prod is the loop)"
+  },
+  "queue": {
+    "open_issues": 5,
+    "open_loop_prs": 0,
+    "orphans": 0,
+    "cooling": [35, 40, 41, 44],
+    "operator_items": [49],
+    "open_decisions": 0,
+    "fixer_tonight": "expected no-op (all cooling past 05:03 local)",
+    "fixer_0705_eligible_vs_cap": "~8 vs 3 (standing backlog watch)"
+  },
+  "trends": {
+    "pass_rate_14d": "2 rows: 1 PASS / 1 PARTIAL / 0 FAIL (3 attempts; 1 quota-killed left no row = open #35)",
+    "latency_median_s": 57.5,
+    "latency_latest_s": 57,
+    "days_since_journey": 0.63,
+    "days_since_sweep": null,
+    "cost_latest_x_median": {
+      "orchestrator": 1.32,
+      "fixer": 1.38,
+      "pr-verifier": 1.31,
+      "e2e-user": 1.0,
+      "manager": null
+    },
+    "diff_accounting": "26/26 reconcile"
+  },
+  "repo": {
+    "loc_product": 3287,
+    "loc_tests": 1928,
+    "deps": 0,
+    "tests_collected": 48
+  },
+  "deltas_vs_yesterday": {
+    "loc_product": "+88 (3199 -> 3287; owner commits 2c6bd77 + 8c705fe, fully attributed, under 200 threshold)",
+    "loc_tests": "+43 (1885 -> 1928; prompt-lint doc-contract classes + t34)",
+    "tests_collected": "0 (48 flat)",
+    "deps": "0 (holds)",
+    "known_failures_pins": "0 (holds)",
+    "open_issues": "-3 (8 -> 5)",
+    "cost_usd_24h": "+20.84 (189.54 -> 210.38)"
+  },
+  "notes": "Off-schedule pass. No issues filed, none needed: all findings dedup to open #44 (deploys.jsonl backfilled again this run) and #35, or are digest notes. #49 = drill residue, close recommended to owner. git fetch --prune run (6 stale remote-tracking refs cleared)."
+}
