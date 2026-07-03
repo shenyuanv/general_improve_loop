@@ -1,72 +1,73 @@
 {
-  "ts": "2026-07-03T01:05:48Z",
+  "ts": "2026-07-03T01:56:20Z",
   "week": "2026-W27",
   "window_days": 14,
   "project": "general_improve_loop",
   "runs": {
-    "window_runs": 9,
-    "success_rate": 78,
+    "window_runs": 13,
+    "success_rate": 85,
     "results": {
       "error": 1,
       "paused": 1,
-      "success": 7
+      "success": 11
     },
-    "cost_total_usd": 55.26,
+    "cost_total_usd": 88.05,
     "nogo_reverts": 0,
     "timeouts": 0,
     "by_loop": {
       "e2e-user": {
-        "runs": 1,
-        "ok": 1,
-        "cost_usd": 5.23
-      },
-      "fixer": {
-        "runs": 3,
-        "ok": 2,
-        "cost_usd": 18.16
-      },
-      "orchestrator": {
-        "runs": 3,
-        "ok": 2,
-        "cost_usd": 19.84
-      },
-      "pr-verifier": {
         "runs": 2,
         "ok": 2,
-        "cost_usd": 12.03
+        "cost_usd": 8.66
+      },
+      "fixer": {
+        "runs": 4,
+        "ok": 3,
+        "cost_usd": 26.38
+      },
+      "orchestrator": {
+        "runs": 4,
+        "ok": 3,
+        "cost_usd": 36.53
+      },
+      "pr-verifier": {
+        "runs": 3,
+        "ok": 3,
+        "cost_usd": 16.47
       }
     }
   },
   "funnel": {
     "open": {
-      "loop_filed": 3,
-      "accepted": 2,
+      "loop_filed": 6,
+      "accepted": 4,
       "action_loop": 6,
-      "decisions": 1,
+      "decisions": 2,
       "bugs": 6,
       "loop_prs": 0
     },
     "merged_window": {
-      "count": 5,
-      "median_hours_to_merge": 0.2
+      "count": 7,
+      "median_hours_to_merge": 0.1
     },
     "prs_awaiting_rework": 0
   },
   "funnel_note": null,
   "ledger": {
     "journeys": {
-      "window_rows": 1,
+      "window_rows": 2,
       "verdicts": {
-        "PARTIAL": 1
+        "PARTIAL": 1,
+        "PASS": 1
       }
     }
   },
   "tester_latest": null,
   "ratchet": {
-    "loc_product": 2922,
-    "loc_tests": 1437,
+    "loc_product": 3136,
+    "loc_tests": 1471,
     "deps": 0,
-    "tests_collected": 38
+    "tests_collected": 39
   },
   "markers": {
     "paused": false,
