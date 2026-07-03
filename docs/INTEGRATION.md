@@ -9,7 +9,7 @@ for others). macOS (launchd) or Linux (cron).
 ## Step 1 — scaffold
 
 ```bash
-cd ~/sourcecode/general_improve_loop
+cd /path/to/general_improve_loop   # wherever you cloned this repo
 ./install.sh /path/to/your/project
 ```
 
