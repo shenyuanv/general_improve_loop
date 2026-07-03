@@ -49,15 +49,16 @@ RC=0
 log() { printf '%s %s\n' "$(date '+%F %T')" "$*" >>"$LOG"; }
 notify() { "$NOTIFY" "$CONFIG" "$1" "$2"; }
 
-record_run() { # $1=result
+record_run() { # $1=result, $2=resets_at ISO (quota rows only)
   jq -cn --arg loop "$LOOP" --arg started "$START_ISO" \
     --arg ended "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
     --argjson rc "${RC:-0}" \
     --argjson timed_out "$( [[ "${RC:-0}" == 124 ]] && echo true || echo false )" \
     --argjson cost_usd "${COST:-0}" --argjson nogo "${NOGO_REVERTS:-0}" \
     --argjson commits "${COMMITS:-0}" --argjson ins "${INS:-0}" --argjson del "${DEL:-0}" \
-    --arg log "$LOG" --arg result "$1" --arg trigger "$TRIGGER" \
-    '{loop:$loop,started:$started,ended:$ended,rc:$rc,timed_out:$timed_out,cost_usd:$cost_usd,commits:$commits,insertions:$ins,deletions:$del,nogo_reverts:$nogo,log:$log,result:$result,trigger:$trigger}' \
+    --arg log "$LOG" --arg result "$1" --arg trigger "$TRIGGER" --arg resets_at "${2:-}" \
+    '{loop:$loop,started:$started,ended:$ended,rc:$rc,timed_out:$timed_out,cost_usd:$cost_usd,commits:$commits,insertions:$ins,deletions:$del,nogo_reverts:$nogo,log:$log,result:$result,trigger:$trigger}
+     + (if $resets_at != "" then {resets_at:$resets_at} else {} end)' \
     >>"$STATE_DIR/runs.jsonl" 2>/dev/null
 }
 
@@ -217,7 +218,27 @@ log "invoking $RUNNER_BIN for $LOOP (timeout ${TIMEOUT_S}s)"
 "${KEEPAWAKE[@]}" "$TIMEOUT_BIN" --kill-after=60 "$TIMEOUT_S" \
   "$RUNNER_BIN" -p "$(cat "$AGENT_PROMPT_FILE")" "${RUNNER_FLAGS[@]}" >>"$LOG" 2>&1
 RC=$?
-COST=$(grep '"type":"result"' "$LOG" | tail -1 | jq -r '.total_cost_usd // 0' 2>/dev/null); COST=${COST:-0}
+RESULT_LINE=$(grep '"type":"result"' "$LOG" | tail -1)
+COST=$(jq -r '.total_cost_usd // 0' <<<"$RESULT_LINE" 2>/dev/null); COST=${COST:-0}
+# Runner-quota classification (#30): a 429 on the result line means the
+# runner's quota is exhausted — an environmental stop, not an agent failure.
+# Recorded as result "quota" (with resets_at from the last rate_limit_event),
+# which the breaker predicate already ignores: its filter counts only
+# success|error|timeout|breaker rows, so quota runs never accrue strikes.
+QUOTA=0 RESETS_AT="" RESETS_LOCAL=""
+if (( RC != 0 && RC != 124 )) && \
+   [[ "$(jq -r '.api_error_status // empty' <<<"$RESULT_LINE" 2>/dev/null)" == "429" ]]; then
+  QUOTA=1
+  RESETS_EPOCH=$(grep '"type":"rate_limit_event"' "$LOG" | tail -1 | \
+    jq -r '.rate_limit.resetsAt // .resetsAt // empty' 2>/dev/null)
+  if [[ "$RESETS_EPOCH" =~ ^[0-9]+$ ]]; then
+    RESETS_AT=$(date -u -r "$RESETS_EPOCH" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || \
+                date -u -d "@$RESETS_EPOCH" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null)
+    RESETS_LOCAL=$(date -r "$RESETS_EPOCH" +%H:%M 2>/dev/null || \
+                   date -d "@$RESETS_EPOCH" +%H:%M 2>/dev/null)
+  fi
+  log "runner quota exhausted (429); resets_at=${RESETS_AT:-unknown}"
+fi
 log "agent exited rc=$RC cost=\$$COST"
 
 # ── 5. post-run floors ──────────────────────────────────────────────────────
@@ -255,6 +276,7 @@ if [[ "$LOOP" == "orchestrator" && ! -f "$DIGEST" ]]; then
 fi
 if (( RC != 0 )); then
   MSG="rc=$RC"; (( RC == 124 )) && MSG="TIMED OUT after ${TIMEOUT_S}s"
+  (( QUOTA )) && MSG="quota exhausted — resets ${RESETS_LOCAL:-unknown}"
   notify "$PROJECT_NAME $LOOP failed" "$MSG — log: $(basename "$LOG")"
 fi
 if [[ -f "$DIGEST" ]]; then
@@ -265,6 +287,6 @@ fi
 case "$RC" in
   0)   record_run success ;;
   124) record_run timeout ;;
-  *)   record_run error ;;
+  *)   if (( QUOTA )); then record_run quota "$RESETS_AT"; else record_run error; fi ;;
 esac
 exit "$RC"
