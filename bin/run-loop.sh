@@ -182,8 +182,13 @@ read -r INS DEL <<<"$(git diff --numstat "$HEAD_BEFORE"..HEAD 2>/dev/null | awk 
 # ── 6. digest guarantee, per-run notify fan-out, run history ───────────────
 if [[ "$LOOP" == "orchestrator" && ! -f "$DIGEST" ]]; then
   mkdir -p "$PROJECT_DIR/ops/reports"
-  printf '# %s daily — %s — orchestrator FAILED before writing a digest (rc=%s)\n\nStatus: 🔴 wrapper stub\nSee log: %s\n' \
-    "$PROJECT_NAME" "$(date +%F)" "$RC" "$LOG" >"$DIGEST"
+  if (( RC == 0 )); then
+    printf '# %s daily — %s — orchestrator completed (rc=0) but wrote no digest — wrapper fallback\n\nStatus: 🟡 wrapper stub\nSee log: %s\n' \
+      "$PROJECT_NAME" "$(date +%F)" "$LOG" >"$DIGEST"
+  else
+    printf '# %s daily — %s — orchestrator FAILED before writing a digest (rc=%s)\n\nStatus: 🔴 wrapper stub\nSee log: %s\n' \
+      "$PROJECT_NAME" "$(date +%F)" "$RC" "$LOG" >"$DIGEST"
+  fi
 fi
 if (( RC != 0 )); then
   MSG="rc=$RC"; (( RC == 124 )) && MSG="TIMED OUT after ${TIMEOUT_S}s"
