@@ -22,6 +22,17 @@ LOG_DIR="$STATE_DIR/logs"
 mkdir -p "$LOG_DIR" "$STATE_DIR/lock" "$STATE_DIR/evidence"
 export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
+# GH identity floor: headless runs have no GH_TOKEN and gh's *active* keyring
+# account can flip to one that cannot see $GH_REPO — every wrapper gh call
+# then fails open (empty lists = dead self-accept guard and queue lint, and
+# dispatchers seeing an empty queue). When GH_AUTH_USER is configured, pin
+# the token from that keyring entry regardless of the active account;
+# exported so the agent run and preflight inherit it too.
+if [[ -n "${GH_AUTH_USER:-}" ]]; then
+  GH_TOKEN="${GH_TOKEN:-$(gh auth token --user "$GH_AUTH_USER" 2>/dev/null || true)}"
+  [[ -n "${GH_TOKEN:-}" ]] && export GH_TOKEN
+fi
+
 TS=$(date +%Y%m%d-%H%M%S)
 START_ISO=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 LOG="$LOG_DIR/$LOOP-$TS.log"
@@ -57,10 +68,25 @@ check_nogo() { # $1=repo dir, $2=base sha; reverts violators, echoes "<reverted>
 }
 
 # ── Floor: self-accept guard — loops never authorize their own work ──────
-check_self_accept() { # $1=since ISO; strips accepted labels applied in-window
+# A single-identity setup can't attribute a label event to owner vs loop,
+# so stripping is gated on evidence in THIS run's transcript ($LOG) that
+# the loop itself added the label (gh issue edit --add-label, or the labels
+# API). No evidence ⇒ assume the owner acted mid-run: keep the label and
+# send an FYI instead of strip + demotion. The grep is a heuristic — a
+# deliberately obfuscated add evades it; accepted residual, the write-policy
+# contract and the verifier lane still cover it. The manual drill
+# (--check-self-accept) strips unconditionally: it has no transcript, so the
+# evidence gate applies only when $LOG is a real file.
+check_self_accept() { # $1=since ISO; strips loop-evidenced accepted labels applied in-window
   local since=$1 n=0 inum ldate
   while IFS=$'\t' read -r inum ldate; do
     [[ -z "$inum" ]] && continue
+    if [[ "$LOG" != /dev/stderr ]] && \
+       ! grep -Eq "issue edit.*[^0-9]${inum}[^0-9].*--add-label.*accepted|issues/${inum}/labels" "$LOG" 2>/dev/null; then
+      log "self-accept guard: #$inum labeled 'accepted' $ldate (in-window) — no loop evidence in transcript, kept (assuming owner)"
+      notify "$PROJECT_NAME $LOOP" "FYI: #$inum gained 'accepted' during this run — kept (no loop evidence); remove the label if that wasn't you"
+      continue
+    fi
     if gh issue edit "$inum" -R "$GH_REPO" --remove-label accepted >>"$LOG" 2>&1; then
       n=$((n+1)); log "self-accept guard: stripped 'accepted' from #$inum (labeled $ldate in-window)"
     fi

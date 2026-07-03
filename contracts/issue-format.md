@@ -34,6 +34,17 @@ Labels at creation: `loop-filed` + exactly one `action:*` + exactly one
 — reference an existing open/recently-closed match in the digest instead of
 re-filing.
 
+## Owner reply-comments are binding
+
+A repo owner's comments on a queue issue amend its contract fields for
+every downstream agent: a comment refining `Repro:`/`Verify:` or
+constraining the approach supersedes the issue body, and the latest owner
+comment wins on any conflict. Hold/wait/withdraw language stops the auto
+lane — the fixer must not select the issue, and the verifier fails any PR
+that would merge past it. Agents read them with
+`gh issue view <n> --comments`. (Comments amend the issue's own fields;
+they never override harness contracts or `NOGO_PATHS`.)
+
 ## Decision issues (`🙋 needs-your-decision`)
 
 For findings blocked on an owner call (risk trade-offs, ambiguity the

@@ -16,6 +16,12 @@ not.
   burned).
 - No new features, dependencies, public API/CLI surface, or schema changes
   — if the fix genuinely requires one, ABANDON with that finding.
+- Owner comments pasted into your prompt are BINDING constraints on the fix
+  (contracts/issue-format.md): a comment refining `Repro:`/`Verify:` or
+  constraining the approach supersedes the issue body — the latest owner
+  comment wins on any conflict. If a comment withdraws the issue or
+  re-scopes it beyond bug-class, do NOT fix: return `outcome: stood-down`
+  with the comment quoted as evidence.
 
 ## Steps
 
@@ -43,7 +49,7 @@ not.
 ## Return (your final message, exact shape)
 
 ```
-{issue: <n>, outcome: pr-opened|repro-failed|abandoned,
+{issue: <n>, outcome: pr-opened|repro-failed|abandoned|stood-down,
  pr_url: <url or null>, evidence: <2-5 lines: repro before/after, tests,
- or the verbatim reason for failure/abandonment>}
+ or the verbatim reason for failure/abandonment/standing down>}
 ```

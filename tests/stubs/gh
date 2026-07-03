@@ -3,7 +3,7 @@
 # Reads: canned fixtures under $T_GH_DIR; applies the CALLER's --jq with real
 # jq so the wrapper's actual filter expressions are under test.
 # Writes: one argv line per mutating call to $T_CAP/gh-mutations.log.
-# Failure knobs: T_GH_AUTH_RC, T_GH_EDIT_RC, T_GH_LABEL_CREATE_RC.
+# Failure knobs: T_GH_AUTH_RC, T_GH_EDIT_RC, T_GH_LABEL_CREATE_RC, T_GH_REPO_RC.
 set -uo pipefail
 CAP="${T_CAP:-$HOME/.captures}"; FIX="${T_GH_DIR:-$HOME/.gh-fixtures}"
 mkdir -p "$CAP"
@@ -23,6 +23,10 @@ case "${1:-} ${2:-}" in
   "api "*)
     if [[ "${2:-}" == */issues/events* ]]; then
       emit "$(cat "$FIX/events.json" 2>/dev/null || echo '[]')"; exit 0
+    fi
+    if [[ "${2:-}" == repos/* ]]; then   # preflight's `gh api repos/<GH_REPO>` reachability probe
+      (( ${T_GH_REPO_RC:-0} != 0 )) && exit "${T_GH_REPO_RC}"
+      emit '{"id": 1}'; exit 0
     fi
     mut "UNMATCHED $*"; exit 1 ;;
   "issue list")

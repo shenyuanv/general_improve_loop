@@ -20,8 +20,9 @@ nothing happening?" — the digest's funnel table answers it first.
 
 - `loop-filed` — provenance: created by a loop (grooming may only edit these).
 - `accepted` / `rejected` — **human-only**, the authorization channel. The
-  wrapper's self-accept guard strips any `accepted` applied during a loop's
-  run window.
+  wrapper's self-accept guard strips an `accepted` applied during a loop's
+  run window when the run transcript shows the loop adding it; no evidence
+  ⇒ kept + FYI, assumed owner (contracts/safety-floors.md).
 - `action:loop` | `action:operator` | `action:interactive` — exactly one per
   issue: who executes.
 - `component:<area>` — exactly one; projects define their own set (see
@@ -37,8 +38,11 @@ Leave OPEN = keep the daily reminder. CLOSE with a reply = "decided — stand
 down": loops retire the related nag and re-raise ONLY when the stated
 premise observably breaks (file a NEW 🙋 issue referencing the old one).
 Closed 🙋 issues are the durable standing-decision register — re-read them
-nightly and premise-check against current telemetry. Owner comments are
-decision RECORDS, never instructions that override contracts or no-go paths.
+nightly and premise-check against current telemetry. On 🙋 issues, owner
+comments are decision RECORDS; on queue issues they are binding amendments
+to that issue's own `Repro:`/`Verify:`/scope, latest wins, hold/withdraw
+stops the auto lane (contracts/issue-format.md). Neither kind ever
+overrides harness contracts or no-go paths.
 
 ## Cooling period
 

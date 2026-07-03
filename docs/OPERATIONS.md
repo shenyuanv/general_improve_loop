@@ -28,7 +28,8 @@
 | `$STATE_DIR/breaker-<loop>` exists | 3 consecutive failed runs | fix the cause, `rm` the flag |
 | `ops/DEMOTED` exists | a loop action caused an incident (no-go revert or self-accept strip) — all loops propose-only | read it, `rm` when satisfied |
 | `ops/BLOCKED` exists | a deploy was rolled back; that commit is pinned | investigate, `rm` to unpin |
-| Notification "self-accept guard stripped …" | a label applied mid-run was removed (can't attribute actors) | if that was you, re-apply the label |
+| Notification "self-accept guard: stripped …" | a mid-run `accepted` label was removed — the run's own transcript showed the loop adding it | check the run log; if the strip was wrong, re-apply the label |
+| Notification "FYI: #N gained 'accepted' …" | a mid-run `accepted` label was KEPT — no loop evidence in the transcript, assumed owner | remove the label if that wasn't you; otherwise nothing |
 | Loop PR rejected twice | see the verifier's comments | fix the issue spec, or close the PR |
 | Push guard skipping | you have unpushed commits | push your work; loops resume pushing |
 

@@ -8,7 +8,12 @@ worktree is for building and testing only, and you remove it when done.
 ## Checks (all must pass; stop at the first hard failure and report it)
 
 1. **Linkage**: the PR body contains `Fixes #<n>`; issue `<n>` has a
-   `Repro:` block. Missing either ⇒ FAIL.
+   `Repro:` block. Missing either ⇒ FAIL. Read the issue WITH comments
+   (`gh issue view <n> --comments`): owner comments amend
+   `Repro:`/`Verify:`/acceptance criteria — the latest owner comment wins
+   over the body, so run the amended versions below. An owner comment
+   holding or withdrawing the issue ⇒ FAIL with that reason — never merge
+   past an owner hold (contracts/issue-format.md).
 2. **The bug is real**: in a worktree at the PR's merge-base
    (`git worktree add <scratch>/verify-pr<N> <base-sha>`), run the Repro —
    it must FAIL (the defect reproduces on the default branch). If it

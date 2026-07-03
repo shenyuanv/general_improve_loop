@@ -43,7 +43,7 @@ A project-agnostic self-improvement harness: a nightly relay of headless AI agen
 ## Shell conventions
 
 - `run-loop.sh` deliberately uses `set -uo pipefail` **without** `-e`: every failure is handled explicitly so a mid-run error cannot skip the post-run floors. Keep it that way.
-- `notify.sh` must never fail its caller; `preflight.sh` always exits 0 and communicates via its JSON `verdict` (abort only for: git broken, disk <5 GB, agent auth dead — everything else is a soft flag agents map to skipped stages).
+- `notify.sh` must never fail its caller; `preflight.sh` always exits 0 and communicates via its JSON `verdict` (abort only for: git broken, disk <5 GB, agent auth dead, gh unable to reach `GH_REPO` — everything else is a soft flag agents map to skipped stages).
 - Portability is macOS + Linux: mkdir-based locks (macOS has no flock), `gtimeout || timeout`, `df -g` vs `df -BG`, launchd vs cron.
 
 ## Design laws

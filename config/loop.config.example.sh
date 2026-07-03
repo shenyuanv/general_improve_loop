@@ -10,6 +10,10 @@ ILOOP_ROOT="$HOME/sourcecode/general_improve_loop"  # this engine's checkout
 PROJECT_DIR="$HOME/sourcecode/YOUR_PROJECT"         # the repo under improvement
 PROJECT_NAME="your-project"                         # short slug (state dir, labels)
 GH_REPO="your-org/your-repo"                        # gh issue/pr target
+# Optional: gh keyring username to pin for headless runs — protects against
+# the active gh account flipping to one that cannot see GH_REPO (the wrapper
+# floors then fail open on silently-empty lists). Empty = gh's active account.
+GH_AUTH_USER=""
 GIT_REMOTE="origin"                                 # remote the loops push to
 
 # ── State (outside the repo) ─────────────────────────────────────────────

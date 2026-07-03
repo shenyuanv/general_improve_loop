@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # bin/preflight.sh <loop-name> <config> — cheap checks before burning tokens.
 # Emits ONE JSON object; always exits 0. verdict=abort only for failures no
-# run can survive: broken git, <5 GB disk, dead agent auth. Everything else
-# is a soft flag the agent maps to skipped stages (see contracts/safety-floors.md).
+# run can survive: broken git, <5 GB disk, dead agent auth, gh unable to
+# reach GH_REPO. Everything else is a soft flag the agent maps to skipped
+# stages (see contracts/safety-floors.md).
 set -uo pipefail
 LOOP="${1:-orchestrator}"; CONFIG="${2:?config path}"
 # shellcheck source=/dev/null
@@ -40,6 +41,12 @@ verdict=run; abort_reason=null
 if [[ "$git_ok" != true ]]; then verdict=abort; abort_reason='"git repo broken"'
 elif (( disk_gb < 5 )); then verdict=abort; abort_reason='"disk <5 GB free"'
 elif [[ "$agent_auth" != true ]]; then verdict=abort; abort_reason='"agent runner auth dead — log in to your agent CLI"'
+elif ! gh api "repos/$GH_REPO" --jq .id >/dev/null 2>&1; then
+  # A gh account flip makes every gh call fail open (silently empty queues,
+  # dead wrapper floors) — that's an abort, not a soft flag. Distinct from
+  # gh_ok above: `gh auth status` can pass on an account that cannot see
+  # GH_REPO. Pin GH_AUTH_USER in the config to prevent flips.
+  verdict=abort; abort_reason="\"gh cannot reach $GH_REPO (auth/account flip) — silent-empty-queue floors\""
 fi
 
 jq -n --arg loop "$LOOP" --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
