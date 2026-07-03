@@ -23,7 +23,7 @@ t_assert_exists "$tester"
 t_assert_absent "$LA/com.improve-loop.fixture.bogus-loop.plist"
 t_assert_contains "$T_CAP/sched.out" "SKIP bogus-loop"
 
-t_assert_contains "$orch" "<string>/bin/bash</string><string>$T_REPO/bin/run-loop.sh</string><string>orchestrator</string><string>$T_CFG</string>"
+t_assert_contains "$orch" "<string>/bin/bash</string><string>$T_REPO/bin/run-loop.sh</string><string>--scheduled</string><string>orchestrator</string><string>$T_CFG</string>"
 t_assert_contains "$orch" "<key>Hour</key><integer>3</integer><key>Minute</key><integer>33</integer>"
 t_assert_not_contains "$orch" "<key>Weekday</key>"
 t_assert_contains "$orch" "<key>LOOP_TIMEOUT_S</key><string>6000</string>"

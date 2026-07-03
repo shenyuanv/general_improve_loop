@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# bin/run-loop.sh <loop-name> <path-to-loop.config.sh>
+# bin/run-loop.sh [--scheduled] <loop-name> <path-to-loop.config.sh>
 #
 # The mechanical shell around every agent run. Thin and dumb by design: all
 # judgment lives in agents/<loop>/AGENT.md; everything here is what the
@@ -14,7 +14,12 @@
 #   run-loop.sh --check-queue-lint <since-iso> <config>
 set -uo pipefail   # NOT -e: every failure is handled explicitly
 
-LOOP="${1:?usage: run-loop.sh <loop-name>|--check-* <arg> <config>}"
+# Run provenance for the runs.jsonl row: the scheduler invokes with
+# --scheduled; anything else (owner ad-hoc runs, drills) records "manual",
+# so the scorecard can score the scheduled relay separately (#22).
+TRIGGER="manual"
+if [[ "${1:-}" == "--scheduled" ]]; then TRIGGER="scheduled"; shift; fi
+LOOP="${1:?usage: run-loop.sh [--scheduled] <loop-name>|--check-* <arg> <config>}"
 if [[ "$LOOP" == --check-* ]]; then CHECK_ARG="${2:?missing arg}"; CONFIG="${3:?missing config path}"; else CONFIG="${2:?usage: run-loop.sh <loop-name> <config>}"; fi
 # shellcheck source=/dev/null
 source "$CONFIG" || { echo "cannot source config $CONFIG" >&2; exit 1; }
@@ -51,8 +56,8 @@ record_run() { # $1=result
     --argjson timed_out "$( [[ "${RC:-0}" == 124 ]] && echo true || echo false )" \
     --argjson cost_usd "${COST:-0}" --argjson nogo "${NOGO_REVERTS:-0}" \
     --argjson commits "${COMMITS:-0}" --argjson ins "${INS:-0}" --argjson del "${DEL:-0}" \
-    --arg log "$LOG" --arg result "$1" \
-    '{loop:$loop,started:$started,ended:$ended,rc:$rc,timed_out:$timed_out,cost_usd:$cost_usd,commits:$commits,insertions:$ins,deletions:$del,nogo_reverts:$nogo,log:$log,result:$result}' \
+    --arg log "$LOG" --arg result "$1" --arg trigger "$TRIGGER" \
+    '{loop:$loop,started:$started,ended:$ended,rc:$rc,timed_out:$timed_out,cost_usd:$cost_usd,commits:$commits,insertions:$ins,deletions:$del,nogo_reverts:$nogo,log:$log,result:$result,trigger:$trigger}' \
     >>"$STATE_DIR/runs.jsonl" 2>/dev/null
 }
 

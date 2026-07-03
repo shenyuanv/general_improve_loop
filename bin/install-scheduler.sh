@@ -31,7 +31,7 @@ if [[ "$OS" == "Darwin" ]]; then
 <dict>
   <key>Label</key><string>$label</string>
   <key>ProgramArguments</key>
-  <array><string>/bin/bash</string><string>$RUNNER</string><string>$loop</string><string>$CONFIG</string></array>
+  <array><string>/bin/bash</string><string>$RUNNER</string><string>--scheduled</string><string>$loop</string><string>$CONFIG</string></array>
   <key>StartCalendarInterval</key>
   <dict><key>Hour</key><integer>$hour</integer><key>Minute</key><integer>$min</integer>$wday_xml</dict>
   <key>EnvironmentVariables</key><dict><key>LOOP_TIMEOUT_S</key><string>$timeout</string></dict>
@@ -56,7 +56,7 @@ else # Linux: crontab entries between managed markers
     IFS='|' read -r loop hour min wday timeout <<<"$job"
     if [[ ! -f "$ILOOP_ROOT/agents/$loop/AGENT.md" ]]; then echo "SKIP $loop — no agents/$loop/AGENT.md"; continue; fi
     dow="${wday:-*}"
-    NEW+=$'\n'"$min $hour * * $dow LOOP_TIMEOUT_S=$timeout /bin/bash $RUNNER $loop $CONFIG $TAG"
+    NEW+=$'\n'"$min $hour * * $dow LOOP_TIMEOUT_S=$timeout /bin/bash $RUNNER --scheduled $loop $CONFIG $TAG"
     printf 'installed cron %-14s %02d:%02d dow=%s\n' "$loop" "$hour" "$min" "$dow"
   done
   printf '%s\n' "$NEW" | crontab -
