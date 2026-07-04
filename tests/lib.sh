@@ -40,8 +40,12 @@ t_teardown() {
 # ── invoking the system under test ──────────────────────────────────────
 # Extra args are VAR=val pairs passed through the environment (e.g.
 # LOOP_TIMEOUT_S=2, FAKE_AGENT_RC=7, DF_STUB_GB=2, T_GH_AUTH_RC=1).
+# Ambient LOOP_TIMEOUT_S is scrubbed (-u) so the suite stays hermetic when
+# run from a shell with a wrapped ancestor (#50); an explicit
+# LOOP_TIMEOUT_S=N in "$@" still wins because env applies assignments
+# after -u removals.
 t_env() {
-  env HOME="$T_HOME" GIT_CONFIG_NOSYSTEM=1 GIT_TERMINAL_PROMPT=0 \
+  env -u LOOP_TIMEOUT_S HOME="$T_HOME" GIT_CONFIG_NOSYSTEM=1 GIT_TERMINAL_PROMPT=0 \
       PATH="$T_BIN:$PATH" T_CAP="$T_CAP" T_GH_DIR="$T_GH" "$@"
 }
 
