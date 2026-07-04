@@ -34,7 +34,10 @@ not.
    `outcome: repro-failed` with your exact attempt and output.
 3. **Fix minimally**: target ≤150 changed lines INCLUDING tests. Add or
    adjust a test that FAILS before your fix and PASSES after — run it both
-   ways and keep both outputs as evidence.
+   ways and keep both outputs as evidence. Any NEW test file MUST use the
+   test id assigned in your dispatcher paste-ins
+   (`tests/t/t<assigned>-<slug>.sh`) — never pick your own id; sibling
+   agents add tests in parallel and colliding ids break merged main.
 4. **Validate**: the issue's `Verify:` passes · every command in the config
    `GATES` array passes · nothing in `git status` you didn't intend.
 5. **Open the PR**: push your branch; `gh pr create` with title
