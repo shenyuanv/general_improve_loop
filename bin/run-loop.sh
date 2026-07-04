@@ -43,6 +43,11 @@ TS=$(date +%Y%m%d-%H%M%S)
 START_ISO=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 LOG="$LOG_DIR/$LOOP-$TS.log"
 TIMEOUT_S="${LOOP_TIMEOUT_S:-6000}"
+# Scrub LOOP_TIMEOUT_S once captured: it is scheduler→wrapper plumbing, not
+# part of the agent's documented ILOOP_* env interface. Leaking it makes any
+# nested run-loop.sh (the hermetic suite in GATES runs the REAL wrapper)
+# inherit the OUTER loop's timeout instead of the 6000 default (#50).
+unset LOOP_TIMEOUT_S
 NOTIFY="$ILOOP_ROOT/bin/notify.sh"
 RC=0
 
