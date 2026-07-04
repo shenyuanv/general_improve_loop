@@ -57,7 +57,11 @@ VERBATIM (state the binding rule: owner replies are binding constraints on
 the fix; the latest owner comment wins over the body on conflict; a comment
 withdrawing the issue or re-scoping it beyond bug-class ⇒ return
 `stood-down`), the config path, the no-go list, and the write-policy
-universal rules.
+universal rules. Before spawning, assign each subagent a unique reserved
+test id: find the next free `t<N>` from `ls tests/t/` and paste one
+assigned id per subagent into its prompt — parallel siblings must never
+pick their own new-test ids (each branch is green alone but merged main
+trips the test-id uniqueness gate).
 
 ## 3. Collect & report
 
