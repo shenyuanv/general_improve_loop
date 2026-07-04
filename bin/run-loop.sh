@@ -336,6 +336,16 @@ if [[ -f "$DIGEST" ]]; then
   grep '^> NOTIFY:' | sed 's/^> NOTIFY:[[:space:]]*//' | head -3 | \
   while IFS= read -r m; do notify "$PROJECT_NAME $LOOP" "$m"; done
 fi
+if (( RC != 0 )); then
+  # In-repo trace for ANY failed run (#35): without this, an errored
+  # non-orchestrator run leaves only a runs.jsonl row, so in-repo trend
+  # data silently excludes killed attempts. Appended AFTER the fan-out —
+  # the direct failure notify above already fired, so this line is a
+  # trace, not a second notification.
+  mkdir -p "$PROJECT_DIR/ops/reports"
+  printf '> NOTIFY: failure — %s run %s rc=%s — log: %s\n' \
+    "$LOOP" "$TS" "$RC" "$(basename "$LOG")" >>"$DIGEST"
+fi
 case "$RC" in
   0)   record_run success ;;
   124) record_run timeout ;;

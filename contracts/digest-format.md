@@ -40,6 +40,11 @@ Rules:
   path. INCIDENT sections carry raw command output, not summaries.
 - `> NOTIFY:` lines are the ONLY notification channel (wrapper fans out
   lines this run appended, max 3). Respect the DIRECTION notify whitelist.
+- Failed runs always leave a trace: for ANY loop exiting non-zero the
+  wrapper appends `> NOTIFY: failure — <loop> run <id> rc=<rc> — log:
+  <basename>` to the day's digest (digest-guarantee floor in
+  bin/run-loop.sh). It is appended after that run's fan-out, so it is an
+  in-repo trace, not a second notification.
 - Retention: dailies older than `DIGEST_RETENTION_DAYS` get one summary line
   each in `ops/reports/weekly/YYYY-Www.md`, then are deleted (gardener duty).
 - Machine-readable siblings: `ops/metrics/YYYY-MM-DD.json` (telemetry +
